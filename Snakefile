@@ -3,6 +3,7 @@ from os.path import join
 # configuration file 
 configfile: "chasm2/data/config.yaml"
 configfile: join(config['twentyTwentyPlus'], 'config.yaml')
+config['data_dir'] = join(config['twentyTwentyPlus'], config['data_dir'])
 
 # include 20/20+ snakefile
 include: join(config['twentyTwentyPlus'], 'Snakefile')
@@ -16,7 +17,7 @@ mutations=config['mutations']
 # data files
 #output_dir=config["output_dir"]
 snvGet="/mnt/disk003/projects/CVS-dev/SNVBox/snvGetGenomic"
-data_dir=config['data']
+data_dir=config['chasm2_data']
 bed=join(data_dir, config["bed"])
 fasta=join(data_dir, config["fasta"])
 featureList=join(data_dir, config["feature_list"])
@@ -26,6 +27,7 @@ liftoverChain=join(data_dir, config['liftoverChain'])
 hotmaps1d_windows=[0, 5, 10]
 folds=range(1, 11) 
 iters=range(1, 11)
+
 
 #rule all:
     #input:
@@ -64,7 +66,7 @@ rule prepSnvboxInput:
         "   -i {input.mutations} "
         "   -m {params.mutsigcv} "
         "   -g {output.geneFile} "
-        "   -m {output.passenger} "
+        "   -op {output.passenger} "
         "   -od {output.driver}"
 
 # Fetch snvbox features
@@ -114,10 +116,10 @@ rule hotmaps:
     params:
         window='{win}'
     output:
-        result=join(output_dir, "hotmaps1d/window{win}/result.txt"),
-        null=join(output_dir, "hotmaps1d/window{win}/null_distribution")
+        result=join(output_dir, "hotmaps1d/window{win,[0-9]+}/result.txt"),
+        null=join(output_dir, "hotmaps1d/window{win,[0-9]+}/null_distribution")
     shell:
-        "probabilistic2020 hotmaps1d "
+        "probabilistic2020 --log-level=INFO hotmaps1d "
         "   -i {input.fasta} "
         "   -b {input.bed} "
         "   -m {input.mutations} "

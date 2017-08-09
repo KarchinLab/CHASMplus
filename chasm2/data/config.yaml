@@ -1,7 +1,7 @@
 # location of 20/20+ snakefile
 twentyTwentyPlus: /projects/driver_genes/2020+/
 # location of data files
-data: chasm2/data
+chasm2_data: chasm2/data
 oncogene: oncogenes.txt
 tsg: tsgs.txt
 bed: snvboxGenes.bed
