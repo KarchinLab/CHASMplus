@@ -64,7 +64,7 @@ def parse_arguments():
                                              description=description)
 
     # program arguments
-    myparsers = [parser_prepSnvbox, parser_mergeFeat, parser_nullDist
+    myparsers = [parser_prepSnvbox, parser_mergeFeat, parser_nullDist,
                  parser_combScore]
     for i, parser in enumerate(myparsers):
         # group of parameters
