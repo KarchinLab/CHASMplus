@@ -1,0 +1,13 @@
+# location of 20/20+ snakefile
+twentyTwentyPlus: /projects/driver_genes/2020+/
+# location of data files
+data: chasm2/data
+oncogene: oncogenes.txt
+tsg: tsgs.txt
+bed: snvboxGenes.bed
+fasta: snvboxGenes.fa
+gene_length: gene_length.txt
+dgd: dgd_Hsa_all_v71.tsv
+mutsigcv: mutsigcv_gene_features.txt
+feature_list: Features.list
+liftoverChain: hg19ToHg38.over.chain.gz
