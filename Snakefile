@@ -80,7 +80,7 @@ rule snvGetGenomic:
     output:
         join(output_dir, "snvbox_features.txt")
     shell:
-        "{snvGet} "
+        "python2.7 {snvGet} "
         "   --pickone -c -f {{params.featureList}} "
         "   --o {{output}} "
         "   driver {{input.driver}} "
@@ -187,7 +187,7 @@ rule simSnvGetGenomic:
     output:
         join(output_dir, "simulated_summary/snvbox_features_{iter,[0-9]+}.txt")
     shell:
-        "{snvGet} "
+        "python2.7 {snvGet} "
         "   --pickone -c -f {{params.featureList}} "
         "   --o {{output}} "
         "   driver {{input.driver}} "
@@ -219,6 +219,7 @@ rule simHotmaps:
         mutations=join(output_dir, 'simulated_summary/chasm_sim_maf{iter}.txt'),
         bed=bed,
         fasta=fasta
+    threads: 10
     params:
         window='{win_sim}'
     output:
