@@ -52,7 +52,7 @@ rule chasm2:
 #########################
 rule chasm2_pretrained:
     input:
-        null=join(output_dir, "chasm2_null_distribution.txt"),
+        null=join(output_dir, "chasm2_null_distribution_pretrained.txt"),
         chasm=join(output_dir, 'chasm2_result_pretrained.txt'), 
         ttplus=join(output_dir, 'output/results/r_random_forest_prediction.txt')
     output:
@@ -275,6 +275,19 @@ rule simCvTest:
         "   -t {params.model_dir} "
         "   -o {output}"
 
+rule simCvTestPretrained:
+    input: 
+        expand(join(trained_model, 'train{fold}.Rdata'), fold=folds),
+        features=join(output_dir, 'simulated_summary/snvbox_features_merged_{iter}.txt')
+    params:
+        model_dir=trained_model
+    output:
+        join(output_dir, 'simulated_summary/chasm2_result_pretrained{iter,[0-9]+}.txt') 
+    shell:
+        "Rscript chasm2/r/cv_test.R "
+        "   -i {input.features} "
+        "   -t {params.model_dir} "
+        "   -o {output}"
 
 ############################
 # exclusively only predict 
@@ -308,6 +321,19 @@ rule nullDistribution:
         sim_dir=join(output_dir, "simulated_summary")
     output:
         join(output_dir, "chasm2_null_distribution.txt")
+    shell:
+        "python chasm2/console/chasm.py nullDistribution "
+        "   -s {params.sim_dir} "
+        "   -o {output}"
+
+rule nullDistributionPretrained:
+    input:
+        expand(join(output_dir, "simulated_summary/2020plus/sim{iter}/results/r_random_forest_prediction.txt"), iter=iters),
+        expand(join(output_dir, "simulated_summary/chasm2_result_pretrained{iter}.txt"), iter=iters)
+    params:
+        sim_dir=join(output_dir, "simulated_summary")
+    output:
+        join(output_dir, "chasm2_null_distribution_pretrained.txt")
     shell:
         "python chasm2/console/chasm.py nullDistribution "
         "   -s {params.sim_dir} "
