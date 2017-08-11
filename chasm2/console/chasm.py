@@ -79,7 +79,7 @@ def parse_arguments():
                                     help=help_str)
             help_str = 'Directory containing results from mutsigcv v1.4'
             major_parser.add_argument('-m', '--mutsigcv-dir',
-                                    type=str, required=True,
+                                    type=str,
                                     help=help_str)
             help_str = 'File relating gene names to IDs'
             major_parser.add_argument('-g', '--gene-file',
