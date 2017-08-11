@@ -31,8 +31,8 @@ def parse_arguments():
 
 def main(opts):
     # read in data
-    hotmaps_list = opts['hotmaps'].split(',')
-    width_list = [0, 5, 10]
+    #hotmaps_list = opts['hotmaps'].split(',')
+    #width_list = [0, 5, 10]
 
     # handle mutations
     # figure out the column header
@@ -56,17 +56,20 @@ def main(opts):
 
     # merge the two data frames
     logger.info('merging hotmaps. . .')
+    hotmaps_df = pd.read_table(opts['hotmaps'])
+    width_list = hotmaps_df['window length'].unique()
     for i, width in enumerate(width_list):
-        hotmaps_df = pd.read_table(hotmaps_list[i])
+        #hotmaps_df = pd.read_table(hotmaps_list[i])
+        tmp_hotmaps_df = hotmaps_df[hotmaps_df['window length']==width].copy()
         tmp_cols = ['Transcript_ID', 'Protein_position', 'Tumor_Sample_Barcode', 'UID']
         hmap_cols = ['index', 'p-value ({0})'.format(width)]
-        hotmaps_df = hotmaps_df.rename(columns={'p-value': 'p-value ({0})'.format(width)})
+        tmp_hotmaps_df = tmp_hotmaps_df.rename(columns={'p-value': 'p-value ({0})'.format(width)})
 
         if i == 0:
-            merged_df = pd.merge(hotmaps_df[hmap_cols], mut_df[tmp_cols],
+            merged_df = pd.merge(tmp_hotmaps_df[hmap_cols], mut_df[tmp_cols],
                                  left_on='index', right_index=True, how='right')
         else:
-            merged_df = pd.merge(hotmaps_df[hmap_cols], merged_df,
+            merged_df = pd.merge(tmp_hotmaps_df[hmap_cols], merged_df,
                                  on='index', how='right')
 
     # fill with mean of group
@@ -122,5 +125,3 @@ def main(opts):
 if __name__ == '__main__':
     opts = parse_arguments()
     main(opts)
-
-
