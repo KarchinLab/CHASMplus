@@ -11,8 +11,9 @@ include: join(config['twentyTwentyPlus'], 'Snakefile')
 # parameters from command line
 output_dir=config['output_dir']
 mutsigcv_dir=config['mutsigcv_dir']
-mutations_hg38=config['mutations_hg38']
+#mutations_hg38=config['mutations_hg38']
 mutations=config['mutations']
+trained_model=config['trained_model']
 
 # data files
 #output_dir=config["output_dir"]
@@ -29,11 +30,9 @@ folds=range(1, 11)
 iters=range(1, 11)
 
 
-#rule all:
-    #input:
-        #expand(join(output_dir, 'cv_trained_model/train{fold}.Rdata'), fold=folds)
-        #
-
+#########################
+# Run full pancancer model
+#########################
 rule chasm2:
     input:
         null=join(output_dir, "chasm2_null_distribution.txt"),
@@ -42,7 +41,24 @@ rule chasm2:
     output:
         join(output_dir, 'chasm2_result_final.txt')
     shell:
-        "python chasm2/console/chasm.py "
+        "python chasm2/console/chasm.py combinedScore"
+        "   -c {input.chasm} "
+        "   -t {input.ttplus} "
+        "   -nd {input.null} "
+        "   -o {output}"
+
+#########################
+# Run a pre-trained model
+#########################
+rule chasm2_pretrained:
+    input:
+        null=join(output_dir, "chasm2_null_distribution.txt"),
+        chasm=join(output_dir, 'chasm2_result_pretrained.txt'), 
+        ttplus=join(output_dir, 'output/results/r_random_forest_prediction.txt')
+    output:
+        join(output_dir, 'chasm2_result_pretrained_final.txt')
+    shell:
+        "python chasm2/console/chasm.py combinedScore"
         "   -c {input.chasm} "
         "   -t {input.ttplus} "
         "   -nd {input.null} "
@@ -54,7 +70,7 @@ rule chasm2:
 # convert MAF mutation file into snvbox input
 rule prepSnvboxInput:
     input:
-        mutations=mutations_hg38,
+        mutations=join(output_dir, 'mutations.hg38.maf'),
     params:
         mutsigcv=mutsigcv_dir
     output:
@@ -90,7 +106,7 @@ rule snvGetGenomic:
 rule mergeAdditionalFeatures:
     input:
         #expand(join(output_dir, 'hotmaps1d/window{win}/result.txt'), win=hotmaps1d_windows),
-        mutations=mutations_hg38,
+        mutations=join(output_dir, 'mutations.hg38.maf'),
         hotmaps=join(output_dir, 'hotmaps1d/result.txt'),
         #windowFive=join(output_dir, 'hotmaps1d/window5/result.txt'),
         #windowTen=join(output_dir, 'hotmaps1d/window10/result.txt'),
@@ -157,6 +173,19 @@ rule cv_test:
         "   -t {params.model_dir} "
         "   -o {output}"
 
+# use a pre-trained pan-cancer model
+rule cv_pretrained_test:
+    input:
+        features=join(output_dir, 'snvbox_features_merged.txt')
+    params:
+        model_dir=trained_model
+    output:
+        join(output_dir, 'chasm2_result_pretrained.txt') 
+    shell:
+        "Rscript chasm2/r/cv_test.R "
+        "   -i {input.features} "
+        "   -t {params.model_dir} "
+        "   -o {output}"
 
 #########################
 # Handle simuated mutations
@@ -196,11 +225,8 @@ rule simSnvGetGenomic:
 # merge additional features outside snvbox
 rule simMergeAdditionalFeatures:
     input:
-        #expand(join(output_dir, 'simulated_summary/hotmaps1d/result_window{win_sim}_{{iter}}.txt'), win_sim=hotmaps1d_windows),
-        mutations=mutations_hg38,
+        mutations=join(output_dir, 'simulated_summary/chasm_sim_maf{iter}.hg38.txt'),
         hotmaps=join(output_dir, 'simulated_summary/hotmaps1d/result_{iter}.txt'),
-        #windowFive=join(output_dir, 'simulated_summary/hotmaps1d/result_window5_{iter}.txt'),
-        #windowTen=join(output_dir, 'simulated_summary/hotmaps1d/result_window10_{iter}.txt'),
         snvbox=join(output_dir, "simulated_summary/snvbox_features_{iter}.txt"),
         geneFile=join(output_dir, "simulated_summary/id2gene_{iter}.txt")
     output:
@@ -289,9 +315,46 @@ rule nullDistribution:
 
 
 #########################
-# Handle conversion to hg38 in simulations
+# Handle conversion to hg38
 #########################
-# create input for liftover
+## for observed data
+# create input for liftover for observed data
+rule mafToBed:
+    input:
+        mutations=mutations
+    output:
+        bed_out=join(output_dir, 'convert/mutations.bed')
+    shell:
+        "python scripts/maf_to_bed.py "
+        "   -i {input.mutations} "
+        "   -o {output.bed_out}"
+
+# liftover coordinates of observed data
+rule liftover:
+    input:
+        bed_in=join(output_dir, 'convert/mutations.bed'),
+        chain=liftoverChain
+    output:
+        bed_hg38=join(output_dir, 'convert/mutations_hg38.bed'),
+        unmapped=join(output_dir, 'convert/mutations.unmapped.bed')
+    shell:
+        "liftOver {input.bed_in} {input.chain} {output.bed_hg38} {output.unmapped}"
+
+# Create simulated MAF file with hg38 coordinates
+rule liftoverMaf:
+    input:
+        bed_hg38=join(output_dir, 'convert/mutations_hg38.bed'),
+        mutations=mutations
+    output:
+        mutations_hg38=join(output_dir, 'mutations.hg38.maf')
+    shell:
+        "python scripts/create_hg38_maf.py "
+        "   -i {input.bed_hg38} "
+        "   -m {input.mutations} "
+        "   -o {output.mutations_hg38}"
+
+## for simulations
+# create input for liftover for simulations
 rule simMafToBed:
     input:
         mutations=join(output_dir, 'simulated_summary/chasm_sim_maf{iter}.txt'),
