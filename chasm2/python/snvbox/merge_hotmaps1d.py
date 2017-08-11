@@ -18,6 +18,9 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description=info)
     parser.add_argument('-i', '--input',
                         type=str, required=True,
+                        help='Mutation file (MAF)')
+    parser.add_argument('-hm', '--hotmaps',
+                        type=str, required=True,
                         help='Hotmaps1d result file')
     parser.add_argument('-f', '--features',
                         type=argparse.FileType('r'), required=True,
