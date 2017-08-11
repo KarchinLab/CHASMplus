@@ -89,11 +89,11 @@ rule snvGetGenomic:
 # merge additional features outside snvbox
 rule mergeAdditionalFeatures:
     input:
-        expand(join(output_dir, 'hotmaps1d/window{win}/result.txt'), win=hotmaps1d_windows),
+        #expand(join(output_dir, 'hotmaps1d/window{win}/result.txt'), win=hotmaps1d_windows),
         mutations=mutations_hg38,
-        windowZero=join(output_dir, 'hotmaps1d/window0/result.txt'),
-        windowFive=join(output_dir, 'hotmaps1d/window5/result.txt'),
-        windowTen=join(output_dir, 'hotmaps1d/window10/result.txt'),
+        hotmaps=join(output_dir, 'hotmaps1d/result.txt'),
+        #windowFive=join(output_dir, 'hotmaps1d/window5/result.txt'),
+        #windowTen=join(output_dir, 'hotmaps1d/window10/result.txt'),
         snvbox=join(output_dir, "snvbox_features.txt"),
         geneFile=join(output_dir, "id2gene.txt")
     output:
@@ -103,7 +103,7 @@ rule mergeAdditionalFeatures:
         "   -i {input.mutations} "
         "   -ig {input.geneFile} "
         "   -s {input.snvbox} "
-        "   -hm {input.windowZero},{input.windowFive},{input.windowTen} " 
+        "   -hm {input.hotmaps} " 
         "   -o {output}"
 
 # run hotmaps1d algorithm
@@ -114,10 +114,10 @@ rule hotmaps:
         fasta=fasta
     threads: 10
     params:
-        window='{win}'
+        window=','.join(map(str, hotmaps1d_windows))
     output:
-        result=join(output_dir, "hotmaps1d/window{win,[0-9]+}/result.txt"),
-        null=join(output_dir, "hotmaps1d/window{win,[0-9]+}/null_distribution")
+        result=join(output_dir, "hotmaps1d/result.txt"),
+        null=join(output_dir, "hotmaps1d/null_distribution")
     shell:
         "probabilistic2020 --log-level=INFO hotmaps1d "
         "   -i {input.fasta} "
@@ -173,7 +173,7 @@ rule simPrepSnvboxInput:
         "python chasm2/console/chasm.py prepSnvboxInput "
         "   -i {input.mutations} "
         "   -g {output.geneFile} "
-        "   -m {output.passenger} "
+        "   -op {output.passenger} "
         "   -od {output.driver}"
 
 # Fetch snvbox features for simulations
@@ -196,11 +196,11 @@ rule simSnvGetGenomic:
 # merge additional features outside snvbox
 rule simMergeAdditionalFeatures:
     input:
-        expand(join(output_dir, 'simulated_summary/hotmaps1d/result_window{win_sim}_{{iter}}.txt'), win_sim=hotmaps1d_windows),
+        #expand(join(output_dir, 'simulated_summary/hotmaps1d/result_window{win_sim}_{{iter}}.txt'), win_sim=hotmaps1d_windows),
         mutations=mutations_hg38,
-        windowZero=join(output_dir, 'simulated_summary/hotmaps1d/result_window0_{iter}.txt'),
-        windowFive=join(output_dir, 'simulated_summary/hotmaps1d/result_window5_{iter}.txt'),
-        windowTen=join(output_dir, 'simulated_summary/hotmaps1d/result_window10_{iter}.txt'),
+        hotmaps=join(output_dir, 'simulated_summary/hotmaps1d/result_{iter}.txt'),
+        #windowFive=join(output_dir, 'simulated_summary/hotmaps1d/result_window5_{iter}.txt'),
+        #windowTen=join(output_dir, 'simulated_summary/hotmaps1d/result_window10_{iter}.txt'),
         snvbox=join(output_dir, "simulated_summary/snvbox_features_{iter}.txt"),
         geneFile=join(output_dir, "simulated_summary/id2gene_{iter}.txt")
     output:
@@ -210,7 +210,7 @@ rule simMergeAdditionalFeatures:
         "   -i {input.mutations} "
         "   -ig {input.geneFile} "
         "   -s {input.snvbox} "
-        "   -hm {input.windowZero},{input.windowFive},{input.windowTen} " 
+        "   -hm {input.hotmaps} " 
         "   -o {output}"
 
 # run hotmaps1d on the simulated mutations
@@ -221,9 +221,9 @@ rule simHotmaps:
         fasta=fasta
     threads: 10
     params:
-        window='{win_sim}'
+        window=','.join(map(str, hotmaps1d_windows))
     output:
-        result=join(output_dir, 'simulated_summary/hotmaps1d/result_window{win_sim,[0-9]+}_{iter,[0-9]+}.txt')
+        result=join(output_dir, 'simulated_summary/hotmaps1d/result_{iter,[0-9]+}.txt')
     shell:
         "probabilistic2020 hotmaps1d "
         "   -i {input.fasta} "
