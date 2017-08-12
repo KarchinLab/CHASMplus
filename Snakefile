@@ -282,7 +282,7 @@ rule simCvTestPretrained:
     params:
         model_dir=trained_chasm2
     output:
-        join(output_dir, 'simulated_summary/chasm2_result_pretrained{iter,[0-9]+}.txt') 
+        join(output_dir, 'simulated_summary/chasm2_pretrained/chasm2_result{iter,[0-9]+}.txt') 
     shell:
         "Rscript chasm2/r/cv_test.R "
         "   -i {input.features} "
@@ -322,6 +322,7 @@ rule predict_ttplus_only_pretrained:
         "python `which 2020plus.py` --log-level=INFO "
         "   --out-dir {params.outdir} "
         "   classify "
+        "   --cv "
         "   --trained-classifier {input.trained_classifier} "
         "   --features {input.sim_features}"
 
@@ -334,7 +335,7 @@ rule nullDistribution:
         expand(join(output_dir, "simulated_summary/2020plus/sim{iter}/results/r_random_forest_prediction.txt"), iter=iters),
         expand(join(output_dir, "simulated_summary/chasm2_result{iter}.txt"), iter=iters)
     params:
-        sim_dir=join(output_dir, "simulated_summary")
+        sim_dir=join(output_dir, "simulated_summary/2020plus")
     output:
         join(output_dir, "chasm2_null_distribution.txt")
     shell:
@@ -345,14 +346,16 @@ rule nullDistribution:
 rule nullDistributionPretrained:
     input:
         expand(join(output_dir, "simulated_summary/2020plus_pretrained/sim{iter}/results/r_random_forest_prediction.txt"), iter=iters),
-        expand(join(output_dir, "simulated_summary/chasm2_result_pretrained{iter}.txt"), iter=iters)
+        expand(join(output_dir, "simulated_summary/chasm2_pretrained/chasm2_result{iter}.txt"), iter=iters)
     params:
-        sim_dir=join(output_dir, "simulated_summary")
+        ttplus_sim_dir=join(output_dir, "simulated_summary/2020plus_pretrained"),
+        chasm_sim_dir=join(output_dir, "simulated_summary/chasm2_pretrained")
     output:
         join(output_dir, "chasm2_null_distribution_pretrained.txt")
     shell:
         "python chasm2/console/chasm.py nullDistribution "
-        "   -s {params.sim_dir} "
+        "   -t {params.ttplus_sim_dir} "
+        "   -c {params.chasm_sim_dir} "
         "   -o {output}"
 
 
