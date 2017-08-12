@@ -13,7 +13,7 @@ output_dir=config['output_dir']
 mutsigcv_dir=config['mutsigcv_dir']
 #mutations_hg38=config['mutations_hg38']
 mutations=config['mutations']
-trained_model=config['trained_model']
+trained_chasm2=config['trained_model']
 
 # data files
 #output_dir=config["output_dir"]
@@ -54,7 +54,7 @@ rule chasm2_pretrained:
     input:
         null=join(output_dir, "chasm2_null_distribution_pretrained.txt"),
         chasm=join(output_dir, 'chasm2_result_pretrained.txt'), 
-        ttplus=join(output_dir, 'output/results/r_random_forest_prediction.txt')
+        ttplus=join(output_dir, 'pretrained_output/results/r_random_forest_prediction.txt')
     output:
         join(output_dir, 'chasm2_result_pretrained_final.txt')
     shell:
@@ -178,7 +178,7 @@ rule cv_pretrained_test:
     input:
         features=join(output_dir, 'snvbox_features_merged.txt')
     params:
-        model_dir=trained_model
+        model_dir=trained_chasm2
     output:
         join(output_dir, 'chasm2_result_pretrained.txt') 
     shell:
@@ -277,10 +277,10 @@ rule simCvTest:
 
 rule simCvTestPretrained:
     input: 
-        expand(join(trained_model, 'train{fold}.Rdata'), fold=folds),
+        expand(join(trained_chasm2, 'train{fold}.Rdata'), fold=folds),
         features=join(output_dir, 'simulated_summary/snvbox_features_merged_{iter}.txt')
     params:
-        model_dir=trained_model
+        model_dir=trained_chasm2
     output:
         join(output_dir, 'simulated_summary/chasm2_result_pretrained{iter,[0-9]+}.txt') 
     shell:
@@ -310,6 +310,22 @@ rule predict_ttplus_only:
         "   --features {input.sim_features}"
 
 
+rule predict_ttplus_only_pretrained:
+    input:
+        trained_classifier=config['trained_classifier'],
+        sim_features=join(output_dir, "simulated_summary/simulated_features{iter}.txt"),
+    params:
+        outdir=join(output_dir, "simulated_summary/2020plus_pretrained/sim{iter,[0-9]+}")
+    output: 
+        join(output_dir, "simulated_summary/2020plus_pretrained/sim{iter,[0-9]+}/results/r_random_forest_prediction.txt")
+    shell:
+        "python `which 2020plus.py` --log-level=INFO "
+        "   --out-dir {params.outdir} "
+        "   classify "
+        "   --trained-classifier {input.trained_classifier} "
+        "   --features {input.sim_features}"
+
+
 ##########################
 # Create null distribution
 ##########################
@@ -328,7 +344,7 @@ rule nullDistribution:
 
 rule nullDistributionPretrained:
     input:
-        expand(join(output_dir, "simulated_summary/2020plus/sim{iter}/results/r_random_forest_prediction.txt"), iter=iters),
+        expand(join(output_dir, "simulated_summary/2020plus_pretrained/sim{iter}/results/r_random_forest_prediction.txt"), iter=iters),
         expand(join(output_dir, "simulated_summary/chasm2_result_pretrained{iter}.txt"), iter=iters)
     params:
         sim_dir=join(output_dir, "simulated_summary")
