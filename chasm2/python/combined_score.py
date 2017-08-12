@@ -6,7 +6,8 @@ Github: ctokheim
 Description: Computes the combined CHASM2/20/20+ score and calculates p-values
 """
 import pandas as pd
-import chasm2.python.utils as utils
+import numpy as np
+import chasm2.python.stat_funcs as sf
 import argparse
 
 
@@ -35,31 +36,32 @@ def main(opts):
     chasm_df = pd.read_table(opts['chasm2'])
 
     # merge of gene scores
-    df = pd.merge(chasm_df, ttp_df[['gene', 'driver score', 'oncogene score', 'tsg score']],
+    gene_cols = ['gene', 'driver score', 'oncogene score', 'tsg score']
+    rename_dict = {'driver': 'CHASM2'}
+    df = pd.merge(chasm_df.rename(columns=rename_dict), ttp_df[gene_cols],
                   on='gene', how='left')
-
     df['CHASM2_genome'] = df['driver score']*df['CHASM2']
 
     # read the empirical null distribution file
     null_dist = pd.read_table(opts['null_distribution'], index_col=0)
 
     # calc the p-values
-    pvals_genome = utils.compute_p_value(df['CHASM2_genome'].dropna(), null_dist['CHASM2_genome'].dropna())
-    pvals_regular = utils.compute_p_value(df['CHASM2'].dropna(), null_dist['CHASM2'].dropna())
+    pvals_genome = sf.compute_p_value(df['CHASM2_genome'].dropna(), null_dist['CHASM2_genome'].dropna())
+    pvals_regular = sf.compute_p_value(df['CHASM2'].dropna(), null_dist['CHASM2'].dropna())
 
     ## p-value/FDR for exome-wide
     # fill in the p-values and fdr
     df['CHASM2_genome_pval'] = np.nan
     df.loc[~df['CHASM2_genome'].isnull(), 'CHASM2_genome_pval'] = pvals_genome.tolist()
     df['CHASM2_genome_qval'] = np.nan
-    df.loc[~df['CHASM2_genome'].isnull(), 'CHASM2_genome_qval'] = utils.bh_fdr(pvals_genome)
+    df.loc[~df['CHASM2_genome'].isnull(), 'CHASM2_genome_qval'] = sf.bh_fdr(pvals_genome)
 
     ## p-value/FDR for regular CHASM2
     # fill in the p-values and fdr
     df['CHASM2_pval'] = np.nan
     df.loc[~df['CHASM2'].isnull(), 'CHASM2_pval'] = pvals_regular.tolist()
     df['CHASM2_qval'] = np.nan
-    df.loc[~df['CHASM2'].isnull(), 'CHASM2_qval'] = utils.bh_fdr(pvals_regular)
+    df.loc[~df['CHASM2'].isnull(), 'CHASM2_qval'] = sf.bh_fdr(pvals_regular)
 
     # save results
     df.to_csv(opts['output'], sep='\t', index=False)
