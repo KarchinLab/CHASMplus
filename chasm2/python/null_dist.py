@@ -25,13 +25,14 @@ def parse_arguments():
 
 
 def main(opts):
-    sim_dir = opts['simulation_dir']
+    ttplus_sim_dir = opts['ttplus_simdir']
+    chasm_sim_dir = opts['chasm_simdir']
 
     # read in the 20/20+ results
     useful_cols = ['gene', 'driver score']
     tt_dict = {}
     for i in range(1, 11):
-        path = os.path.join(sim_dir, '2020plus/sim{0}/results/r_random_forest_prediction.txt'.format(i))
+        path = os.path.join(ttplus_sim_dir, 'sim{0}/results/r_random_forest_prediction.txt'.format(i))
         tt_dict[i] = pd.read_table(path, usecols=useful_cols)
 
     # go through the CHASM2 results
@@ -39,7 +40,7 @@ def main(opts):
     df_list = []
     for i in range(1, 11):
         # read data
-        path = os.path.join(sim_dir, 'output/chasm_result{0}.txt'.format(i))
+        path = os.path.join(chasm_sim_dir, 'chasm2_result{0}.txt'.format(i))
         tmp_df = pd.read_table(path, usecols=useful_cols)
 
         # merge in 20/20+

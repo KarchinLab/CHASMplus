@@ -110,9 +110,12 @@ def parse_arguments():
                                 type=str, required=True,
                                 help='Output feature file with merged features')
         if i==2:
-            parser.add_argument('-s', '--simulation-dir',
+            parser.add_argument('-t', '--ttplus-simdir',
                                 type=str, required=True,
-                                help='Directory containing simulation results')
+                                help='Directory containing simulation results for 20/20+')
+            parser.add_argument('-c', '--chasm-simdir',
+                                type=str, required=True,
+                                help='Directory containing simulation results for CHASM2')
             parser.add_argument('-o', '--output',
                                 type=str, required=True,
                                 help='Null distribution file')
