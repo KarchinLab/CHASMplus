@@ -108,8 +108,6 @@ rule mergeAdditionalFeatures:
         #expand(join(output_dir, 'hotmaps1d/window{win}/result.txt'), win=hotmaps1d_windows),
         mutations=join(output_dir, 'mutations.hg38.maf'),
         hotmaps=join(output_dir, 'hotmaps1d/result.txt'),
-        #windowFive=join(output_dir, 'hotmaps1d/window5/result.txt'),
-        #windowTen=join(output_dir, 'hotmaps1d/window10/result.txt'),
         snvbox=join(output_dir, "snvbox_features.txt"),
         geneFile=join(output_dir, "id2gene.txt")
     output:
@@ -141,7 +139,7 @@ rule hotmaps:
         "   -m {input.mutations} "
         "   -w {params.window} "
         "   -p {threads} "
-        "   -n 10000 "
+        "   -n 1000 "
         "   --report-index "
         "   -o {output.result} "
         "   -nd {output.null}"
@@ -257,7 +255,7 @@ rule simHotmaps:
         "   -m {input.mutations} "
         "   -w {params.window} "
         "   -p {threads} "
-        "   -n 10000 "
+        "   -n 1000 "
         "   --report-index "
         "   -o {output.result} "
 
@@ -268,7 +266,7 @@ rule simCvTest:
     params:
         model_dir=join(output_dir, 'cv_trained_model')
     output:
-        join(output_dir, 'simulated_summary/chasm2_result{iter,[0-9]+}.txt') 
+        join(output_dir, 'simulated_summary/chasm2/chasm2_result{iter,[0-9]+}.txt') 
     shell:
         "Rscript chasm2/r/cv_test.R "
         "   -i {input.features} "
@@ -333,14 +331,16 @@ rule predict_ttplus_only_pretrained:
 rule nullDistribution:
     input:
         expand(join(output_dir, "simulated_summary/2020plus/sim{iter}/results/r_random_forest_prediction.txt"), iter=iters),
-        expand(join(output_dir, "simulated_summary/chasm2_result{iter}.txt"), iter=iters)
+        expand(join(output_dir, "simulated_summary/chasm2/chasm2_result{iter}.txt"), iter=iters)
     params:
-        sim_dir=join(output_dir, "simulated_summary/2020plus")
+        ttplus_sim_dir=join(output_dir, "simulated_summary/2020plus"),
+        chasm_sim_dir=join(output_dir, 'simulated_summary/chasm2')
     output:
         join(output_dir, "chasm2_null_distribution.txt")
     shell:
         "python chasm2/console/chasm.py nullDistribution "
-        "   -s {params.sim_dir} "
+        "   -t {params.ttplus_sim_dir} "
+        "   -c {params.chasm_sim_dir} "
         "   -o {output}"
 
 rule nullDistributionPretrained:
