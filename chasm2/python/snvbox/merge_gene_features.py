@@ -37,7 +37,7 @@ def parse_arguments():
 def main(opts):
     logger.info('merging gene features . . .')
     # read in data
-    if opts['features'] is str:
+    if type(opts['features']) is str:
         feat_df = pd.read_table(opts['features'])
     else:
         # if not file path, then it's a data frame

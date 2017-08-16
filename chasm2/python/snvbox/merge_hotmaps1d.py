@@ -67,7 +67,6 @@ def main(opts):
         tmp_cols = ['Transcript_ID', 'Protein_position', 'Tumor_Sample_Barcode', 'UID']
         hmap_cols = ['index', 'p-value ({0})'.format(width)]
         tmp_hotmaps_df = tmp_hotmaps_df.rename(columns={'p-value': 'p-value ({0})'.format(width)})
-
         if i == 0:
             merged_df = pd.merge(tmp_hotmaps_df[hmap_cols], mut_df[tmp_cols],
                                  left_on='index', right_index=True, how='right')
@@ -105,7 +104,7 @@ def main(opts):
 
     # save class series
     logger.info('merge previous features ...')
-    if opts['features'] is str:
+    if type(opts['features']) is str:
         df = pd.read_table(opts['features'])
     else:
         df = opts['features']
