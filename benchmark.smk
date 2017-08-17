@@ -1,10 +1,6 @@
 from os.path import join
 configfile: "chasm2/data/config.yaml"
 
-# fill variables which are not needed
-#config['mutsigcv_dir'] = ''
-#config['mutations'] = ''
-
 # important variables
 mutations=config['mutations']
 benchmk=config['benchmark']
@@ -12,6 +8,9 @@ snvbox=config['snvbox']
 hotmaps_null=config['hotmaps_null']
 benchmark_dir=config['benchmark_dir']
 trained_chasm2=config['trained_model']
+
+# snvget 
+prot_to_gen="/mnt/disk003/projects/CVS-dev/SNVBox/proteinToGenomic.py"
 
 #include: 'Snakefile'
 
