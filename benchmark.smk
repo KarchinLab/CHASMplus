@@ -46,3 +46,28 @@ rule mergeAdditionalFeaturesBenchmark:
         "   -b {input.benchmark} "
         "   -n {input.hotmaps} " 
         "   -o {output}"
+
+rule prepSnvboxTxInput:
+    input:
+        # mutation files
+        berger=join(benchmark_dir, 'berger_et_al.txt'),
+        berger_egfr=join(benchmark_dir, 'berger_et_al_egfr.txt'),
+        kim=join(benchmark_dir, 'kim_et_al.txt'),
+        iarc_tp53=join(benchmark_dir, 'iarc_tp53.txt'),
+        # preferred transcript files
+        berger_tx=join(benchmark_dir, 'preferred_tx/berger_et_al.preferred_tx.txt'),
+        berger_egfr_tx=join(benchmark_dir, 'preferred_tx/berger_et_al_egfr.preferred_tx.txt'),
+        kim_tx=join(benchmark_dir, 'preferred_tx/kim_et_al.preferred_tx.txt'),
+        iarc_tp53_tx=join(benchmark_dir, 'preferred_tx/iarc_tp53.preferred_tx.txt')
+    output:
+        berger_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al.snvbox_tx.txt'),
+        berger_egfr_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.snvbox_tx.txt'),
+        kim_sbox=join(benchmark_dir, 'snvbox_input/kim_et_al.snvbox_tx.txt'),
+        iarc_tp53_sbox=join(benchmark_dir, 'snvbox_input/iarc_tp53.snvbox_tx.txt')
+    shell:
+        """
+        python scripts/benchmark/create_kim_snvbox_input.py -i {input.kim} -p {input.kim_tx} -o {output.kim_sbox}
+        python scripts/benchmark/create_berger_snvbox_input.py -i {input.berger} -p {input.berger_tx} -o {output.berger_sbox}
+        python scripts/benchmark/create_berger_snvbox_input.py -i {input.berger_egfr} -p {input.berger_egfr_tx} -o {output.berger_egfr_sbox}
+        python scripts/benchmark/create_tp53_snvbox_input.py -i {input.iarc_tp53} -p {input.iarc_tp53_tx} -o {output.iarc_tp53_sbox}
+        """
