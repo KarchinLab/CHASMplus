@@ -71,3 +71,93 @@ rule prepSnvboxTxInput:
         python scripts/benchmark/create_berger_snvbox_input.py -i {input.berger_egfr} -p {input.berger_egfr_tx} -o {output.berger_egfr_sbox}
         python scripts/benchmark/create_tp53_snvbox_input.py -i {input.iarc_tp53} -p {input.iarc_tp53_tx} -o {output.iarc_tp53_sbox}
         """
+
+rule snvboxTxToGenomic:
+    input:
+        berger_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al.snvbox_tx.txt'),
+        berger_egfr_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.snvbox_tx.txt'),
+        kim_sbox=join(benchmark_dir, 'snvbox_input/kim_et_al.snvbox_tx.txt'),
+        iarc_tp53_sbox=join(benchmark_dir, 'snvbox_input/iarc_tp53.snvbox_tx.txt')
+    params:
+        txToGenome='python2.7 {0}'.format(prot_to_gen)
+    output:
+        berger_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al.snvbox_genomic.txt'),
+        berger_egfr_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.snvbox_genomic.txt'),
+        kim_sbox=join(benchmark_dir, 'snvbox_input/kim_et_al.snvbox_genomic.txt'),
+        iarc_tp53_sbox=join(benchmark_dir, 'snvbox_input/iarc_tp53.snvbox_genomic.txt')
+    shell:
+        """
+        {params.txToGenome} -i {input.berger_sbox} -o {output.berger_sbox}
+        {params.txToGenome} -i {input.berger_egfr_sbox} -o {output.berger_egfr_sbox}
+        {params.txToGenome} -i {input.kim_sbox} -o {output.kim_sbox}
+        {params.txToGenome} -i {input.iarc_tp53_sbox} -o {output.iarc_tp53_sbox}
+        """
+
+# create BED file for liftover from hg38 to hg19
+rule snvboxToBed:
+    input:
+        berger_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al.snvbox_genomic.txt'),
+        berger_egfr_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.snvbox_genomic.txt'),
+        kim_sbox=join(benchmark_dir, 'snvbox_input/kim_et_al.snvbox_genomic.txt'),
+        iarc_tp53_sbox=join(benchmark_dir, 'snvbox_input/iarc_tp53.snvbox_genomic.txt')
+    output:
+        berger_bed=join(benchmark_dir, 'snvbox_input/berger_et_al.hg38.bed'),
+        berger_egfr_bed=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.hg38.bed'),
+        kim_bed=join(benchmark_dir, 'snvbox_input/kim_et_al.hg38.bed'),
+        iarc_tp53_bed=join(benchmark_dir, 'snvbox_input/iarc_tp53.hg38.bed')
+    shell:
+        """
+        python scripts/benchmark/snvbox_to_bed.py -i {input.berger_sbox} -o {output.berger_bed}
+        python scripts/benchmark/snvbox_to_bed.py -i {input.berger_egfr_sbox} -o {output.berger_egfr_bed}
+        python scripts/benchmark/snvbox_to_bed.py -i {input.kim_sbox} -o {output.kim_bed}
+        python scripts/benchmark/snvbox_to_bed.py -i {input.iarc_tp53_sbox} -o {output.iarc_tp53_bed}
+        """
+
+# liftover from hg38 bed file to hg19
+rule liftOver:
+    input:
+        berger_bed=join(benchmark_dir, 'snvbox_input/berger_et_al.hg38.bed'),
+        berger_egfr_bed=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.hg38.bed'),
+        kim_bed=join(benchmark_dir, 'snvbox_input/kim_et_al.hg38.bed'),
+        iarc_tp53_bed=join(benchmark_dir, 'snvbox_input/iarc_tp53.hg38.bed')
+    params:
+        chain='chasm2/data/hg38ToHg19.over.chain.gz'
+    output:
+        berger_bed=join(benchmark_dir, 'snvbox_input/berger_et_al.hg19.bed'),
+        berger_egfr_bed=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.hg19.bed'),
+        kim_bed=join(benchmark_dir, 'snvbox_input/kim_et_al.hg19.bed'),
+        iarc_tp53_bed=join(benchmark_dir, 'snvbox_input/iarc_tp53.hg19.bed'),
+        berger_unmapped=join(benchmark_dir, 'snvbox_input/berger_et_al.unmapped.bed'),
+        berger_egfr_unmapped=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.unmapped.bed'),
+        kim_unmapped=join(benchmark_dir, 'snvbox_input/kim_et_al.unmapped.bed'),
+        iarc_tp53_unmapped=join(benchmark_dir, 'snvbox_input/iarc_tp53.unmapped.bed')
+    shell:
+       """
+       liftOver {input.berger_bed} {params.chain} {output.berger_bed} {output.berger_unmapped}
+       liftOver {input.berger_egfr_bed} {params.chain} {output.berger_egfr_bed} {output.berger_egfr_unmapped}
+       liftOver {input.kim_bed} {params.chain} {output.kim_bed} {output.kim_unmapped}
+       liftOver {input.iarc_tp53_bed} {params.chain} {output.iarc_tp53_bed} {output.iarc_tp53_unmapped}
+       """
+
+rule bedToSnvbox:
+    input:
+        berger_bed=join(benchmark_dir, 'snvbox_input/berger_et_al.hg19.bed'),
+        berger_egfr_bed=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.hg19.bed'),
+        kim_bed=join(benchmark_dir, 'snvbox_input/kim_et_al.hg19.bed'),
+        iarc_tp53_bed=join(benchmark_dir, 'snvbox_input/iarc_tp53.hg19.bed'),
+        berger_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al.snvbox_genomic.txt'),
+        berger_egfr_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.snvbox_genomic.txt'),
+        kim_sbox=join(benchmark_dir, 'snvbox_input/kim_et_al.snvbox_genomic.txt'),
+        iarc_tp53_sbox=join(benchmark_dir, 'snvbox_input/iarc_tp53.snvbox_genomic.txt')
+    output:
+        berger_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al.snvbox_genomic.hg19.txt'),
+        berger_egfr_sbox=join(benchmark_dir, 'snvbox_input/berger_et_al_egfr.snvbox_genomic.hg19.txt'),
+        kim_sbox=join(benchmark_dir, 'snvbox_input/kim_et_al.snvbox_genomic.hg19.txt'),
+        iarc_tp53_sbox=join(benchmark_dir, 'snvbox_input/iarc_tp53.snvbox_genomic.hg19.txt')
+    shell:
+        """
+        python scripts/benchmark/bed_to_snvbox.py -i {input.berger_sbox} -b {input.berger_bed} -o {output.berger_sbox}
+        python scripts/benchmark/bed_to_snvbox.py -i {input.berger_egfr_sbox} -b {input.berger_egfr_bed} -o {output.berger_egfr_sbox}
+        python scripts/benchmark/bed_to_snvbox.py -i {input.kim_sbox} -b {input.kim_bed} -o {output.kim_sbox}
+        python scripts/benchmark/bed_to_snvbox.py -i {input.iarc_tp53_sbox} -b {input.iarc_tp53_bed} -o {output.iarc_tp53_sbox}
+        """
