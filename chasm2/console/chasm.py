@@ -62,10 +62,15 @@ def parse_arguments():
     parser_combScore = subparsers.add_parser('combinedScore',
                                              help=help_info,
                                              description=description)
+    help_info = 'Merge additional features into snvbox output for benchmark assessments'
+    description = help_info + '.'
+    parser_mergeBenchmarkFeat = subparsers.add_parser('mergeBenchmarkFeatures',
+                                             help=help_info,
+                                             description=description)
 
     # program arguments
     myparsers = [parser_prepSnvbox, parser_mergeFeat, parser_nullDist,
-                 parser_combScore]
+                 parser_combScore, parser_mergeBenchmarkFeat]
     for i, parser in enumerate(myparsers):
         # group of parameters
         major_parser = parser.add_argument_group(title='Major options')
@@ -93,7 +98,7 @@ def parse_arguments():
             major_parser.add_argument('-op', '--output-passenger',
                                     type=str, required=True,
                                     help=help_str)
-        if i==1:
+        elif i==1:
             parser.add_argument('-i', '--input',
                                 type=str, required=True,
                                 help='Somatic mutations in MAF format')
@@ -109,7 +114,7 @@ def parse_arguments():
             parser.add_argument('-o', '--output',
                                 type=str, required=True,
                                 help='Output feature file with merged features')
-        if i==2:
+        elif i==2:
             parser.add_argument('-t', '--ttplus-simdir',
                                 type=str, required=True,
                                 help='Directory containing simulation results for 20/20+')
@@ -119,7 +124,7 @@ def parse_arguments():
             parser.add_argument('-o', '--output',
                                 type=str, required=True,
                                 help='Null distribution file')
-        if i==3:
+        elif i==3:
             parser.add_argument('-c', '--chasm2',
                                 type=str, required=True,
                                 help='Score results from CHASM2')
@@ -132,6 +137,25 @@ def parse_arguments():
             parser.add_argument('-o', '--output',
                                 type=str, required=True,
                                 help='Final output from CHASM2')
+        elif i==4:
+            parser.add_argument('-m', '--maf',
+                                type=str, required=True,
+                                help='Somatic mutations in MAF format')
+            parser.add_argument('-s', '--snvbox',
+                                type=str, required=True,
+                                help='SNVbox features in tab delimited format')
+            parser.add_argument('-b', '--benchmark',
+                                type=str, required=True,
+                                help='Benchmark mutations')
+            parser.add_argument('-w', '--window',
+                                type=str, required=True,
+                                help='Window sizes for hotmaps')
+            parser.add_argument('-n', '--null-distr-dir',
+                                type=str, required=True,
+                                help='Hotmaps1d null distribution')
+            parser.add_argument('-o', '--output',
+                                type=str, required=True,
+                                help='Output feature file with merged features')
     args = parent_parser.parse_args()
 
     # handle logging
@@ -180,6 +204,27 @@ def main(opts):
         # add hotmaps1d features
         opts['features'] = new_df
         hm.main(opts)
+    elif opts['kind'] == 'mergeBenchmarkFeatures':
+        import chasm2.python.snvbox.fetch_hotspot_pvalue as fp
+        import chasm2.python.snvbox.merge_gene_features as gf
+        import chasm2.python.snvbox.merge_hotmaps1d_benchmark as hm
+        final_output = opts['output']
+        snvbox = opts['snvbox']
+        # fetch hotspot p-values
+        opts['output'] = None
+        opts['input'] = opts['benchmark']
+        new_df = fp.main(opts)
+        # add hotmaps1d features
+        opts['hotmaps'] = new_df
+        opts['features'] = opts['snvbox']
+        new_df = hm.main(opts)
+        # add gene features
+        opts['dgd'] = os.path.join(utils.data_dir, utils.config_dict['dgd'])
+        opts['lawrence'] = os.path.join(utils.data_dir, utils.config_dict['mutsigcv'])
+        opts['gene_length'] = os.path.join(utils.data_dir, utils.config_dict['gene_length'])
+        opts['features'] = new_df
+        opts['output'] = final_output
+        new_df = gf.main(opts)
     elif opts['kind'] == 'nullDistribution':
         import chasm2.python.null_dist as nd
         nd.main(opts)
