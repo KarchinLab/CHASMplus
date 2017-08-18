@@ -1,4 +1,4 @@
-from os.path import join
+from os.path import join, abspath
 configfile: "chasm2/data/config.yaml"
 
 # important variables
@@ -14,13 +14,23 @@ prot_to_gen="/mnt/disk003/projects/CVS-dev/SNVBox/proteinToGenomic.py"
 snvgetgenomic="/mnt/disk003/projects/CVS-dev/SNVBox/snvGetGenomic"
 snvgettranscript="/mnt/disk003/projects/CVS-dev/SNVBox/snvGetTranscript"
 
+# other methods
+candra="methods/CanDrA.v1.0/open_candra.pl"
+annovar="methods/annovar/table_annovar.pl"
+transfic="methods/transfic/bin/transf_scores.pl"
+parssnp="methods/ParsSNP/ParsSNP_application.r"
+
 # list of benchmarks to run
 mybenchmarks=['berger_et_al', 'berger_et_al_egfr', 'kim_et_al', 'iarc_tp53']
 
 rule perform_benchmark:
     input:
         expand(join(benchmark_dir, 'methods/output/{benchmark}_chasm2.txt'), benchmark=mybenchmarks),
-        expand(join(benchmark_dir, 'methods/input/{benchmark}.fathmm_input.txt'), benchmark=mybenchmarks)
+        expand(join(benchmark_dir, 'methods/input/{benchmark}.fathmm_input.txt'), benchmark=mybenchmarks),
+        expand(join(benchmark_dir, "methods/output/{benchmark}.candra_output.txt"), benchmark=mybenchmarks),
+        expand(join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt'), benchmark=mybenchmarks),
+        expand(join(benchmark_dir, 'methods/output/{benchmark}.transfic_output.txt'), benchmark=mybenchmarks),
+        expand(abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark}.annovar_output.hg19_multianno.txt')), benchmark=mybenchmarks)
 
 # doesn't compute features based on provided data
 rule chasm2_benchmark:
@@ -199,19 +209,46 @@ rule snvGetTranscript:
 ###################
 rule prepCandraInput:
     input:
-        join(benchmark_dir, 'snvbox_input/{benchmark}.snvget_genomic.hg19.txt')
+        join(benchmark_dir, 'snvbox_input/{benchmark}.snvbox_genomic.hg19.txt')
     output:
         join(benchmark_dir, 'methods/input/{benchmark}.candra_input.txt')
     shell:
         "python scripts/benchmark/snvbox2candra.py -i {input} -o {output}"
 
+# run candra
+rule runCandra:
+    input:
+        join(benchmark_dir, "methods/input/{benchmark}.candra_input.txt")
+    params:
+        candra="perl {0}".format(candra)
+    output:
+        join(benchmark_dir, "methods/output/{benchmark}.candra_output.txt")
+    shell:
+        "{params.candra} OVC {input} > {output}"
+
 ##################
 # annovar
 ##################
-#rule prepAnnovarInput:
-    #input:
-    #output:
-    #shell:
+rule prepAnnovarInput:
+    input:
+        join(benchmark_dir, 'snvbox_input/{benchmark}.snvbox_genomic.hg19.txt')
+    output:
+        join(benchmark_dir, 'methods/input/{benchmark}.annovar_input.txt')
+    shell:
+        "python scripts/benchmark/snvbox2annovar.py "
+        "   -i {input} "
+        "   -o {output} "
+
+rule runAnnovar:
+    input:
+        join(benchmark_dir, 'methods/input/{benchmark}.annovar_input.txt')
+    params:
+        annovar='perl {0}'.format(annovar),
+        prefix=join(benchmark_dir, 'methods/output/{benchmark}.annovar_output')
+    output:
+        join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt')
+    shell:
+        "{params.annovar} {input} -buildver hg19 methods/annovar/humandb -out {params.prefix} -remove -protocol refGene,ensGene,ljb26_all,revel,mcap -operation g,g,f,f,f -nastring NA"
 
 ##################
 # fathmm
@@ -230,3 +267,40 @@ rule prepFathmmInput:
         "   --mysql-user {params.user} "
         "   --mysql-passwd {params.passwd} "
         "   -o {output} "
+
+#####################
+# transfic
+#####################
+rule prepTransficInput:
+    input:
+        join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt')
+    output:
+        join(benchmark_dir, 'methods/input/{benchmark}.transfic_input.txt')
+    shell:
+        "python scripts/benchmark/annovar2transfic.py "
+        "   -i {input} "
+        "   -o {output} "
+
+# run transfic
+rule runTransfic:
+    input:
+        join(benchmark_dir, 'methods/input/{benchmark}.transfic_input.txt')
+    params:
+        transfic='perl {0}'.format(transfic)
+    output:
+        join(benchmark_dir, 'methods/output/{benchmark}.transfic_output.txt')
+    shell:
+        "{params.transfic} gosmf {input} {output}"
+
+######################
+# ParsSNP
+######################
+rule runParssnp:
+    input:
+        abspath(join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt'))
+    params:
+        parssnp='Rscript {0}'.format(parssnp)
+    output:
+        abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark}.annovar_output.hg19_multianno.txt'))
+    shell:
+        "{params.parssnp} {input}"
