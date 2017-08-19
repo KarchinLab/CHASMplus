@@ -52,6 +52,7 @@ def main(opts):
     # Fix some of the columns
     df['HGVSp_Short'] = 'p.' + df['aa']
     df['Strand'] = '+'
+    df['Variant_Classification'] = 'Missense_Mutation'
     df = df.rename(columns={'gene': 'Hugo_Symbol', 'consensus_high_call_DF0629': 'status'})
 
     # save merged results
