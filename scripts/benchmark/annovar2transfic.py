@@ -26,7 +26,7 @@ def parse_arguments():
 def main(opts):
     # read data
     df = pd.read_table(opts['input'])
-    df['mygene'] = df['Gene.ensGene'].str.extract('([A-Z0-9]+);*')
+    df['mygene'] = df['Gene.ensGene'].str.extract('([A-Z0-9]+);*', expand=False)
     df['mutation id'] = range(len(df))
     mycols = ['mutation id', 'mygene', 'SIFT_score', 'Polyphen2_HDIV_score', 'MutationAssessor_score']
 
