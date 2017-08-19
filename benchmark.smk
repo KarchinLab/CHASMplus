@@ -20,14 +20,18 @@ annovar="methods/annovar/table_annovar.pl"
 transfic="methods/transfic/bin/transf_scores.pl"
 parssnp="methods/ParsSNP/ParsSNP_application.r"
 
+# outher config
+data_dir=config['chasm2_data']
+featureList=join(data_dir, config["feature_list"])
+
 # list of benchmarks to run
 mybenchmarks=['berger_et_al', 'berger_et_al_egfr', 'kim_et_al', 'iarc_tp53']
-mybenchmarks_maf=['patrick_et_al']
+mybenchmarks_maf=['patrick_et_al',]
 
 rule perform_benchmark:
     input:
         # regular benchmarks
-        expand(join(benchmark_dir, 'methods/output/{benchmark}_chasm2.txt'), benchmark=mybenchmarks),
+        expand(join(benchmark_dir, 'methods/output/{benchmark}.chasm2_output.txt'), benchmark=mybenchmarks),
         expand(join(benchmark_dir, 'methods/input/{benchmark}.fathmm_input.txt'), benchmark=mybenchmarks),
         expand(join(benchmark_dir, "methods/output/{benchmark}.candra_output.txt"), benchmark=mybenchmarks),
         expand(join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt'), benchmark=mybenchmarks),
@@ -37,12 +41,17 @@ rule perform_benchmark:
 rule perform_benchmark_maflike:
     input:
         # benchmarks from MAF like files
+        expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.chasm2_output.txt'), benchmark_maf=mybenchmarks_maf),
         #expand(join(benchmark_dir, 'methods/input/{benchmark_maf}.fathmm_input.txt'), benchmark_maf=mybenchmarks_maf),
         expand(join(benchmark_dir, "methods/output/{benchmark_maf}.candra_output.txt"), benchmark_maf=mybenchmarks_maf),
         expand(abspath(join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output.hg19_multianno.txt')), benchmark_maf=mybenchmarks_maf),
         expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.transfic_output.txt'), benchmark_maf=mybenchmarks_maf),
         expand(abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark_maf}.annovar_output.hg19_multianno.txt')), benchmark_maf=mybenchmarks_maf)
 
+
+####################
+# CHASM2
+####################
 # doesn't compute features based on provided data
 rule chasm2_benchmark:
     input:
@@ -50,7 +59,7 @@ rule chasm2_benchmark:
     params:
         model_dir=trained_chasm2
     output:
-        join(benchmark_dir, 'methods/output/{benchmark}_chasm2.txt')
+        join(benchmark_dir, 'methods/output/{benchmark}.chasm2_output.txt')
     shell:
         "Rscript chasm2/r/cv_test.R "
         "   -i {input.features} "
@@ -67,7 +76,7 @@ rule mergeAdditionalFeaturesBenchmark:
         snvbox=join(benchmark_dir, 'snvbox_output/features_{benchmark}.txt'),
         mutations=mutations
     output:
-        join(benchmark_dir, 'snvbox_output/features_{benchmark}_merged.txt')
+        join(benchmark_dir, 'snvbox_output/features_{benchmark,^(?!.*patrick_et_al).*$}_merged.txt')
     shell:
         "python chasm2/console/chasm.py mergeBenchmarkFeatures "
         "   -m {input.mutations} "
@@ -77,6 +86,99 @@ rule mergeAdditionalFeaturesBenchmark:
         "   -n {input.hotmaps} " 
         "   -o {output}"
 
+rule mergeAdditionalFeaturesBenchmarkMaf:
+    input:
+        hotmaps=hotmaps_null,
+        myinput=join(benchmark_dir, '{benchmark_maf}.maf'),
+        snvbox=join(benchmark_dir, 'snvbox_output/features_{benchmark_maf}.txt'),
+        mutations=mutations
+    output:
+        join(benchmark_dir, 'snvbox_output/features_{benchmark_maf,patrick_et_al}_merged.txt')
+    shell:
+        "python chasm2/console/chasm.py mergeBenchmarkFeatures "
+        "   -m {input.mutations} "
+        "   -s {input.snvbox} "
+        "   -w 0,5,10 "
+        "   -b {input.myinput} "
+        "   -n {input.hotmaps} " 
+        "   -o {output}"
+
+########################
+# Convert maf to hg38
+########################
+# create input for liftover for observed data
+rule mafToBed:
+    input:
+        mutations=join(benchmark_dir, '{benchmark_maf}.maf')
+    output:
+        bed_out=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al}.bed')
+    shell:
+        "python scripts/maf_to_bed.py "
+        "   -i {input.mutations} "
+        "   -o {output.bed_out}"
+
+# liftover coordinates of observed data
+rule liftover:
+    input:
+        bed_in=join(benchmark_dir, 'snvbox_input/{benchmark_maf}.bed'),
+        chain='chasm2/data/hg19ToHg38.over.chain.gz'
+    output:
+        bed_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al}_hg38.bed'),
+        unmapped=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al}.unmapped.bed')
+    shell:
+        "liftOver {input.bed_in} {input.chain} {output.bed_hg38} {output.unmapped}"
+
+# Create simulated MAF file with hg38 coordinates
+rule liftoverMaf:
+    input:
+        bed_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf}_hg38.bed'),
+        mutations=join(benchmark_dir, '{benchmark_maf}.maf')
+    output:
+        mutations_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al}.hg38.maf')
+    shell:
+        "python scripts/create_hg38_maf.py "
+        "   -i {input.bed_hg38} "
+        "   -m {input.mutations} "
+        "   -o {output.mutations_hg38}"
+
+#################
+# Query SNVBox with genomic from MAF
+#################
+# convert MAF mutation file into snvbox input
+rule prepSnvboxInput:
+    input:
+        mutations=join(benchmark_dir, 'snvbox_input/{benchmark_maf}.hg38.maf'),
+    output:
+        driver=join(benchmark_dir, "snvbox_input/{benchmark_maf,patrick_et_al}_driver.snvbox_input.txt"),
+        passenger=join(benchmark_dir, "snvbox_input/{benchmark_maf,patrick_et_al}_passenger.snvbox_input.txt"),
+        geneFile=join(benchmark_dir, "snvbox_input/{benchmark_maf,patrick_et_al}_id2gene.txt")
+    shell:
+        "python chasm2/console/chasm.py prepSnvboxInput "
+        "   -i {input.mutations} "
+        "   -g {output.geneFile} "
+        "   -op {output.passenger} "
+        "   -od {output.driver}"
+
+# Fetch snvbox features
+rule snvGetGenomic:
+    input:
+        driver=join(benchmark_dir, "snvbox_input/{benchmark_maf}_driver.snvbox_input.txt"),
+        passenger=join(benchmark_dir, "snvbox_input/{benchmark_maf}_passenger.snvbox_input.txt"),
+        geneFile=join(benchmark_dir, "snvbox_input/{benchmark_maf}_id2gene.txt")
+    params:
+        featureList=featureList
+    output:
+        join(benchmark_dir, "snvbox_output/features_{benchmark_maf,patrick_et_al}.txt")
+    shell:
+        "python2.7 {snvgetgenomic} "
+        "   --pickone -c -f {{params.featureList}} "
+        "   --o {{output}} "
+        "   driver {{input.driver}} "
+        "   passenger {{input.passenger}} ".format(snvgetgenomic=snvgetgenomic)
+
+#########################
+# Handle SNVBox
+#########################
 rule prepSnvboxTxInput:
     input:
         # mutation files
