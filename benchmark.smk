@@ -22,15 +22,26 @@ parssnp="methods/ParsSNP/ParsSNP_application.r"
 
 # list of benchmarks to run
 mybenchmarks=['berger_et_al', 'berger_et_al_egfr', 'kim_et_al', 'iarc_tp53']
+mybenchmarks_maf=['patrick_et_al']
 
 rule perform_benchmark:
     input:
+        # regular benchmarks
         expand(join(benchmark_dir, 'methods/output/{benchmark}_chasm2.txt'), benchmark=mybenchmarks),
         expand(join(benchmark_dir, 'methods/input/{benchmark}.fathmm_input.txt'), benchmark=mybenchmarks),
         expand(join(benchmark_dir, "methods/output/{benchmark}.candra_output.txt"), benchmark=mybenchmarks),
         expand(join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt'), benchmark=mybenchmarks),
         expand(join(benchmark_dir, 'methods/output/{benchmark}.transfic_output.txt'), benchmark=mybenchmarks),
-        expand(abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark}.annovar_output.hg19_multianno.txt')), benchmark=mybenchmarks)
+        expand(abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark}.annovar_output.hg19_multianno.txt')), benchmark=mybenchmarks),
+
+rule perform_benchmark_maflike:
+    input:
+        # benchmarks from MAF like files
+        #expand(join(benchmark_dir, 'methods/input/{benchmark_maf}.fathmm_input.txt'), benchmark_maf=mybenchmarks_maf),
+        expand(join(benchmark_dir, "methods/output/{benchmark_maf}.candra_output.txt"), benchmark_maf=mybenchmarks_maf),
+        expand(abspath(join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output.hg19_multianno.txt')), benchmark_maf=mybenchmarks_maf),
+        expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.transfic_output.txt'), benchmark_maf=mybenchmarks_maf),
+        expand(abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark_maf}.annovar_output.hg19_multianno.txt')), benchmark_maf=mybenchmarks_maf)
 
 # doesn't compute features based on provided data
 rule chasm2_benchmark:
@@ -204,9 +215,11 @@ rule snvGetTranscript:
         {params.snvget} -c -f {params.featlist} -o {output.iarc_tp53_feat} NA {input.iarc_tp53_sbox}
         """
 
+
 ###################
 # candra
 ###################
+# prep input files
 rule prepCandraInput:
     input:
         join(benchmark_dir, 'snvbox_input/{benchmark}.snvbox_genomic.hg19.txt')
@@ -215,6 +228,14 @@ rule prepCandraInput:
     shell:
         "python scripts/benchmark/snvbox2candra.py -i {input} -o {output}"
 
+rule prepCandraInputMaf:
+    input:
+        join(benchmark_dir, '{benchmark_maf}.maf')
+    output:
+        join(benchmark_dir, 'methods/input/{benchmark_maf,patrick_et_al}.candra_input.txt')
+    shell:
+        "python scripts/benchmark/maf_to_candra.py -i {input} -o {output}"
+
 # run candra
 rule runCandra:
     input:
@@ -222,7 +243,17 @@ rule runCandra:
     params:
         candra="perl {0}".format(candra)
     output:
-        join(benchmark_dir, "methods/output/{benchmark}.candra_output.txt")
+        join(benchmark_dir, "methods/output/{benchmark,^(?!.*patrick_et_al).*$}.candra_output.txt")
+    shell:
+        "{params.candra} OVC {input} > {output}"
+
+rule runCandraMaf:
+    input:
+        join(benchmark_dir, "methods/input/{benchmark_maf}.candra_input.txt")
+    params:
+        candra="perl {0}".format(candra)
+    output:
+        join(benchmark_dir, "methods/output/{benchmark_maf,patrick_et_al}.candra_output.txt")
     shell:
         "{params.candra} OVC {input} > {output}"
 
@@ -233,9 +264,19 @@ rule prepAnnovarInput:
     input:
         join(benchmark_dir, 'snvbox_input/{benchmark}.snvbox_genomic.hg19.txt')
     output:
-        join(benchmark_dir, 'methods/input/{benchmark}.annovar_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*patrick_et_al).*$}.annovar_input.txt')
     shell:
         "python scripts/benchmark/snvbox2annovar.py "
+        "   -i {input} "
+        "   -o {output} "
+
+rule prepAnnovarInputMaf:
+    input:
+        join(benchmark_dir, '{benchmark_maf}.maf')
+    output:
+        join(benchmark_dir, 'methods/input/{benchmark_maf,patrick_et_al}.annovar_input.txt')
+    shell:
+        "python scripts/benchmark/maf_to_annovar.py "
         "   -i {input} "
         "   -o {output} "
 
@@ -246,7 +287,18 @@ rule runAnnovar:
         annovar='perl {0}'.format(annovar),
         prefix=join(benchmark_dir, 'methods/output/{benchmark}.annovar_output')
     output:
-        join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt')
+        join(benchmark_dir, 'methods/output/{benchmark,^(?!.*patrick_et_al).*$}.annovar_output.hg19_multianno.txt')
+    shell:
+        "{params.annovar} {input} -buildver hg19 methods/annovar/humandb -out {params.prefix} -remove -protocol refGene,ensGene,ljb26_all,revel,mcap -operation g,g,f,f,f -nastring NA"
+
+rule runAnnovarMaf:
+    input:
+        join(benchmark_dir, 'methods/input/{benchmark_maf}.annovar_input.txt')
+    params:
+        annovar='perl {0}'.format(annovar),
+        prefix=join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output')
+    output:
+        abspath(join(benchmark_dir, 'methods/output/{benchmark_maf,patrick_et_al}.annovar_output.hg19_multianno.txt'))
     shell:
         "{params.annovar} {input} -buildver hg19 methods/annovar/humandb -out {params.prefix} -remove -protocol refGene,ensGene,ljb26_all,revel,mcap -operation g,g,f,f,f -nastring NA"
 
@@ -260,7 +312,7 @@ rule prepFathmmInput:
         user=config['mysql_user'],
         passwd=config['mysql_passwd']
     output:
-        join(benchmark_dir, 'methods/input/{benchmark}.fathmm_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*patrick_et_al).*$}.fathmm_input.txt')
     shell:
         "python scripts/benchmark/snvbox2fathmm.py -i {input} -o {output}"
         "   -i {input.infile} "
@@ -275,7 +327,17 @@ rule prepTransficInput:
     input:
         join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt')
     output:
-        join(benchmark_dir, 'methods/input/{benchmark}.transfic_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*patrick_et_al).*$}.transfic_input.txt')
+    shell:
+        "python scripts/benchmark/annovar2transfic.py "
+        "   -i {input} "
+        "   -o {output} "
+
+rule prepTransficInputMaf:
+    input:
+        abspath(join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output.hg19_multianno.txt'))
+    output:
+        join(benchmark_dir, 'methods/input/{benchmark_maf,patrick_et_al}.transfic_input.txt')
     shell:
         "python scripts/benchmark/annovar2transfic.py "
         "   -i {input} "
@@ -288,7 +350,17 @@ rule runTransfic:
     params:
         transfic='perl {0}'.format(transfic)
     output:
-        join(benchmark_dir, 'methods/output/{benchmark}.transfic_output.txt')
+        join(benchmark_dir, 'methods/output/{benchmark,^(?!.*patrick_et_al).*$}.transfic_output.txt')
+    shell:
+        "{params.transfic} gosmf {input} {output}"
+
+rule runTransficMaf:
+    input:
+        join(benchmark_dir, 'methods/input/{benchmark_maf}.transfic_input.txt')
+    params:
+        transfic='perl {0}'.format(transfic)
+    output:
+        join(benchmark_dir, 'methods/output/{benchmark_maf,patrick_et_al}.transfic_output.txt')
     shell:
         "{params.transfic} gosmf {input} {output}"
 
@@ -301,6 +373,16 @@ rule runParssnp:
     params:
         parssnp='Rscript {0}'.format(parssnp)
     output:
-        abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark}.annovar_output.hg19_multianno.txt'))
+        abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark,^(?!.*patrick_et_al).*$}.annovar_output.hg19_multianno.txt'))
+    shell:
+        "{params.parssnp} {input}"
+
+rule runParssnpMaf:
+    input:
+        abspath(join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output.hg19_multianno.txt'))
+    params:
+        parssnp='Rscript {0}'.format(parssnp)
+    output:
+        abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark_maf,patrick_et_al}.annovar_output.hg19_multianno.txt'))
     shell:
         "{params.parssnp} {input}"
