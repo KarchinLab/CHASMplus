@@ -26,7 +26,9 @@ def parse_arguments():
 def main(opts):
     useful_cols = ['Hugo_Symbol',
                    #'Transcript_ID',
-                   'HGVSp_Short']
+                   'HGVSp_Short',
+                   'ID',
+                   'class']
     # pattern = os.path.join(opts['input_dir'], 'driver_snvbox_inputdriver*.txt')
     df_list = []
     for i in range(10):
@@ -34,18 +36,20 @@ def main(opts):
         chasm_result = pd.read_table(path)
         path = opts['input_dir'] + '_split_driver{0}.txt'.format(i)
         mut_df = pd.read_table(path, usecols=useful_cols)
-        mut_df['MutationID'] = range(len(mut_df))
+        #mut_df['MutationID'] = range(len(mut_df))
         merged = pd.merge(chasm_result, mut_df,
-                          on='MutationID', how='left')
+                          left_on='MutationID', right_on='ID',
+                          how='left')
         df_list.append(merged)
     # get the passenger data
     path = opts['input_dir'] + '_chasm_input_passengerdriver0.output'
     chasm_result = pd.read_table(path)
     path = opts['input_dir'] + '_split_passenger.txt'.format(i)
     mut_df = pd.read_table(path, usecols=useful_cols)
-    mut_df['MutationID'] = range(len(mut_df))
+    #mut_df['MutationID'] = range(len(mut_df))
     merged = pd.merge(chasm_result, mut_df,
-                        on='MutationID', how='left')
+                      left_on='MutationID', right_on='ID',
+                      how='left')
     df_list.append(merged)
 
     # save results
