@@ -29,7 +29,7 @@ featureList=join(data_dir, config["feature_list"])
 
 # list of benchmarks to run
 mybenchmarks=['berger_et_al', 'berger_et_al_egfr', 'kim_et_al', 'iarc_tp53']
-mybenchmarks_maf=['patrick_et_al', 'msk_impact']
+mybenchmarks_maf=['patrick_et_al', 'msk_impact', 'mc3']
 
 rule perform_benchmark:
     input:
@@ -82,7 +82,7 @@ rule mergeAdditionalFeaturesBenchmark:
         snvbox=join(benchmark_dir, 'snvbox_output/features_{benchmark}.txt'),
         mutations=mutations
     output:
-        join(benchmark_dir, 'snvbox_output/features_{benchmark,^(?!.*(patrick_et_al|msk_impact)).*$}_merged.txt')
+        join(benchmark_dir, 'snvbox_output/features_{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}_merged.txt')
     shell:
         "python chasm2/console/chasm.py mergeBenchmarkFeatures "
         "   -m {input.mutations} "
@@ -99,7 +99,7 @@ rule mergeAdditionalFeaturesBenchmarkMaf:
         snvbox=join(benchmark_dir, 'snvbox_output/features_{benchmark_maf}.txt'),
         mutations=mutations
     output:
-        join(benchmark_dir, 'snvbox_output/features_{benchmark_maf,patrick_et_al|msk_impact}_merged.txt')
+        join(benchmark_dir, 'snvbox_output/features_{benchmark_maf,patrick_et_al|msk_impact|mc3}_merged.txt')
     shell:
         "python chasm2/console/chasm.py mergeBenchmarkFeatures "
         "   -m {input.mutations} "
@@ -117,7 +117,7 @@ rule mafToBed:
     input:
         mutations=join(benchmark_dir, '{benchmark_maf}.maf')
     output:
-        bed_out=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}.bed')
+        bed_out=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}.bed')
     shell:
         "python scripts/maf_to_bed.py "
         "   -i {input.mutations} "
@@ -129,8 +129,8 @@ rule liftover:
         bed_in=join(benchmark_dir, 'snvbox_input/{benchmark_maf}.bed'),
         chain='chasm2/data/hg19ToHg38.over.chain.gz'
     output:
-        bed_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_hg38.bed'),
-        unmapped=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}.unmapped.bed')
+        bed_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_hg38.bed'),
+        unmapped=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}.unmapped.bed')
     shell:
         "liftOver {input.bed_in} {input.chain} {output.bed_hg38} {output.unmapped}"
 
@@ -140,7 +140,7 @@ rule liftoverMaf:
         bed_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf}_hg38.bed'),
         mutations=join(benchmark_dir, '{benchmark_maf}.maf')
     output:
-        mutations_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}.hg38.maf')
+        mutations_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}.hg38.maf')
     shell:
         "python scripts/create_hg38_maf.py "
         "   -i {input.bed_hg38} "
@@ -155,9 +155,9 @@ rule prepSnvboxInput:
     input:
         mutations=join(benchmark_dir, 'snvbox_input/{benchmark_maf}.hg38.maf'),
     output:
-        driver=join(benchmark_dir, "snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_driver.snvbox_input.txt"),
-        passenger=join(benchmark_dir, "snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_passenger.snvbox_input.txt"),
-        geneFile=join(benchmark_dir, "snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_id2gene.txt")
+        driver=join(benchmark_dir, "snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_driver.snvbox_input.txt"),
+        passenger=join(benchmark_dir, "snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_passenger.snvbox_input.txt"),
+        geneFile=join(benchmark_dir, "snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_id2gene.txt")
     shell:
         "python chasm2/console/chasm.py prepSnvboxInput "
         "   -i {input.mutations} "
@@ -174,7 +174,7 @@ rule snvGetGenomic:
     params:
         featureList=featureList
     output:
-        join(benchmark_dir, "snvbox_output/features_{benchmark_maf,patrick_et_al|msk_impact}.txt")
+        join(benchmark_dir, "snvbox_output/features_{benchmark_maf,patrick_et_al|msk_impact|mc3}.txt")
     shell:
         "python2.7 {snvgetgenomic} "
         "   --pickone -c -f {{params.featureList}} "
@@ -340,7 +340,7 @@ rule prepCandraInputMaf:
     input:
         join(benchmark_dir, '{benchmark_maf}.maf')
     output:
-        join(benchmark_dir, 'methods/input/{benchmark_maf,patrick_et_al|msk_impact}.candra_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark_maf,patrick_et_al|msk_impact|mc3}.candra_input.txt')
     shell:
         "python scripts/benchmark/maf_to_candra.py -i {input} -o {output}"
 
@@ -351,7 +351,7 @@ rule runCandra:
     params:
         candra="perl {0}".format(candra)
     output:
-        join(benchmark_dir, "methods/output/{benchmark,^(?!.*(patrick_et_al|msk_impact)).*$}.candra_output.txt")
+        join(benchmark_dir, "methods/output/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.candra_output.txt")
     shell:
         "{params.candra} OVC {input} > {output}"
 
@@ -361,7 +361,7 @@ rule runCandraMaf:
     params:
         candra="perl {0}".format(candra)
     output:
-        join(benchmark_dir, "methods/output/{benchmark_maf,patrick_et_al|msk_impact}.candra_output.txt")
+        join(benchmark_dir, "methods/output/{benchmark_maf,patrick_et_al|msk_impact|mc3}.candra_output.txt")
     shell:
         "{params.candra} OVC {input} > {output}"
 
@@ -372,7 +372,7 @@ rule prepAnnovarInput:
     input:
         join(benchmark_dir, 'snvbox_input/{benchmark}.snvbox_genomic.hg19.txt')
     output:
-        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*(patrick_et_al|msk_impact)).*$}.annovar_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.annovar_input.txt')
     shell:
         "python scripts/benchmark/snvbox2annovar.py "
         "   -i {input} "
@@ -382,7 +382,7 @@ rule prepAnnovarInputMaf:
     input:
         join(benchmark_dir, '{benchmark_maf}.maf')
     output:
-        join(benchmark_dir, 'methods/input/{benchmark_maf,patrick_et_al|msk_impact}.annovar_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark_maf,patrick_et_al|msk_impact|mc3}.annovar_input.txt')
     shell:
         "python scripts/benchmark/maf_to_annovar.py "
         "   -i {input} "
@@ -395,7 +395,7 @@ rule runAnnovar:
         annovar='perl {0}'.format(annovar),
         prefix=join(benchmark_dir, 'methods/output/{benchmark}.annovar_output')
     output:
-        join(benchmark_dir, 'methods/output/{benchmark,^(?!.*(patrick_et_al|msk_impact)).*$}.annovar_output.hg19_multianno.txt')
+        join(benchmark_dir, 'methods/output/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.annovar_output.hg19_multianno.txt')
     shell:
         "{params.annovar} {input} -buildver hg19 methods/annovar/humandb -out {params.prefix} -remove -protocol refGene,ensGene,ljb26_all,revel,mcap -operation g,g,f,f,f -nastring NA"
 
@@ -406,7 +406,7 @@ rule runAnnovarMaf:
         annovar='perl {0}'.format(annovar),
         prefix=join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output')
     output:
-        abspath(join(benchmark_dir, 'methods/output/{benchmark_maf,patrick_et_al|msk_impact}.annovar_output.hg19_multianno.txt'))
+        abspath(join(benchmark_dir, 'methods/output/{benchmark_maf,patrick_et_al|msk_impact|mc3}.annovar_output.hg19_multianno.txt'))
     shell:
         "{params.annovar} {input} -buildver hg19 methods/annovar/humandb -out {params.prefix} -remove -protocol refGene,ensGene,ljb26_all,revel,mcap -operation g,g,f,f,f -nastring NA"
 
@@ -420,7 +420,7 @@ rule prepFathmmInput:
         user=config['mysql_user'],
         passwd=config['mysql_passwd']
     output:
-        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*(patrick_et_al|msk_impact)).*$}.fathmm_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.fathmm_input.txt')
     shell:
         "python scripts/benchmark/snvbox2fathmm.py -i {input} -o {output}"
         "   -i {input.infile} "
@@ -435,7 +435,7 @@ rule prepTransficInput:
     input:
         join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt')
     output:
-        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*(patrick_et_al|msk_impact)).*$}.transfic_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.transfic_input.txt')
     shell:
         "python scripts/benchmark/annovar2transfic.py "
         "   -i {input} "
@@ -445,7 +445,7 @@ rule prepTransficInputMaf:
     input:
         abspath(join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output.hg19_multianno.txt'))
     output:
-        join(benchmark_dir, 'methods/input/{benchmark_maf,patrick_et_al|msk_impact}.transfic_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark_maf,patrick_et_al|msk_impact|mc3}.transfic_input.txt')
     shell:
         "python scripts/benchmark/annovar2transfic.py "
         "   -i {input} "
@@ -458,7 +458,7 @@ rule runTransfic:
     params:
         transfic='perl {0}'.format(transfic)
     output:
-        join(benchmark_dir, 'methods/output/{benchmark,^(?!.*(patrick_et_al|msk_impact)).*$}.transfic_output.txt')
+        join(benchmark_dir, 'methods/output/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.transfic_output.txt')
     shell:
         "{params.transfic} gosmf {input} {output}"
 
@@ -468,7 +468,7 @@ rule runTransficMaf:
     params:
         transfic='perl {0}'.format(transfic)
     output:
-        join(benchmark_dir, 'methods/output/{benchmark_maf,patrick_et_al|msk_impact}.transfic_output.txt')
+        join(benchmark_dir, 'methods/output/{benchmark_maf,patrick_et_al|msk_impact|mc3}.transfic_output.txt')
     shell:
         "{params.transfic} gosmf {input} {output}"
 
@@ -481,7 +481,7 @@ rule runParssnp:
     params:
         parssnp='Rscript {0}'.format(parssnp)
     output:
-        abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark,^(?!.*(patrick_et_al|msk_impact)).*$}.annovar_output.hg19_multianno.txt'))
+        abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.annovar_output.hg19_multianno.txt'))
     shell:
         "{params.parssnp} {input}"
 
@@ -491,7 +491,7 @@ rule runParssnpMaf:
     params:
         parssnp='Rscript {0}'.format(parssnp)
     output:
-        abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark_maf,patrick_et_al|msk_impact}.annovar_output.hg19_multianno.txt'))
+        abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark_maf,patrick_et_al|msk_impact|mc3}.annovar_output.hg19_multianno.txt'))
     shell:
         "{params.parssnp} {input}"
 
@@ -526,7 +526,7 @@ rule runChasmMaf:
     params:
         input_prefix=join(benchmark_dir, 'snvbox_input/{benchmark_maf}')
     output:
-        join(benchmark_dir, 'methods/output/{benchmark_maf,patrick_et_al|msk_impact}.chasm_output.txt')
+        join(benchmark_dir, 'methods/output/{benchmark_maf,patrick_et_al|msk_impact|mc3}.chasm_output.txt')
     shell:
         "python scripts/benchmark/merge_chasm_result.py "
         "   -i {params.input_prefix} "
@@ -540,9 +540,9 @@ rule runChasmMafDriver:
         orig_chasm_dir=orig_chasm_dir,
         chasm_model='driver{chasm_iter}'
     output:
-        idfile=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_id2gene_driver{chasm_iter}.txt'),
-        snvbox_input=abspath(join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_chasm_input{chasm_iter}.txt')),
-        output_file=abspath(join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_chasm_input{chasm_iter}driver{chasm_iter}.output'))
+        idfile=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_id2gene_driver{chasm_iter}.txt'),
+        snvbox_input=abspath(join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_chasm_input{chasm_iter}.txt')),
+        output_file=abspath(join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_chasm_input{chasm_iter}driver{chasm_iter}.output'))
     shell:
         """
         python chasm2/python/snvbox/make_snvbox_input.py \
@@ -563,9 +563,9 @@ rule runChasmMafPassenger:
         orig_chasm_dir=orig_chasm_dir,
         chasm_model='driver0'
     output:
-        idfile=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_id2gene_passenger.txt'),
-        snvbox_input=abspath(join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_chasm_input_passenger.txt')),
-        output_file=abspath(join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_chasm_input_passengerdriver0.output'))
+        idfile=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_id2gene_passenger.txt'),
+        snvbox_input=abspath(join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_chasm_input_passenger.txt')),
+        output_file=abspath(join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_chasm_input_passengerdriver0.output'))
     shell:
         """
         python chasm2/python/snvbox/make_snvbox_input.py \
@@ -585,17 +585,17 @@ rule splitMafChasm:
         chasm_dir=orig_chasm_dir,
         out_prefix=join(benchmark_dir, 'snvbox_input/{benchmark_maf}')
     output:
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_driver0.txt'),
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_driver1.txt'),
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_driver2.txt'),
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_driver3.txt'),
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_driver4.txt'),
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_driver5.txt'),
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_driver6.txt'),
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_driver7.txt'),
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_driver8.txt'),
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_driver9.txt'),
-        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_split_passenger.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_driver0.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_driver1.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_driver2.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_driver3.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_driver4.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_driver5.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_driver6.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_driver7.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_driver8.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_driver9.txt'),
+        join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_split_passenger.txt'),
     shell:
         "python scripts/benchmark/split_maf.py "
         "   -m {input} "

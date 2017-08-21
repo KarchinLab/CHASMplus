@@ -1,5 +1,4 @@
 suppressPackageStartupMessages(library(randomForest))
-set.seed(101)
 
 # get command line args
 if ("getopt" %in% rownames(installed.packages())){
@@ -7,8 +6,7 @@ if ("getopt" %in% rownames(installed.packages())){
   library(getopt)
   spec <- matrix(c(
     'input', 'i', 1, 'character',
-    'output', 'o', 1, 'character',
-    'trained_mod_file', 't', 1, 'character',
+    'seed', 's', 1, 'integer',
     'varimp', 'v', 1, 'character',
     'help', 'h', 0, 'logical'
   ), byrow=TRUE, ncol=4)
@@ -23,6 +21,7 @@ if ("getopt" %in% rownames(installed.packages())){
 } else {
   opt <- list(ARGS=NULL)
 }
+set.seed(opt$seed)
 
 # read in features
 featDf <- read.delim(opt$input)
@@ -32,6 +31,45 @@ colSelect <- -which(names(featDf) %in% c("UID", "ID"))
 idCol <- featDf$ID
 uidCol <- featDf$UID
 featDf <- featDf[, colSelect]
+
+# permute class labels
+allgenes <- sample(unique(as.character(featDf$gene)))
+gene_cts <- table(as.character(featDf$gene))
+dgenes <- unique(as.character(featDf[featDf["class"]=="driver",]$gene))
+featDf_subset <- featDf[featDf$gene %in% dgenes,]
+mytable <- table(as.character(featDf_subset$gene), as.character(featDf_subset$class))
+driver_frac <- mytable[,"driver"] / (mytable[,"driver"] + mytable[,"passenger"])
+tot_num_driver <- sum(mytable[,"driver"])
+featDf["class"] <- "passenger"  # reset everything to passengers
+num_driver_sum <- 0
+
+i <- 1
+j <- 1
+while (num_driver_sum < tot_num_driver) {
+  # start over on driver fractions once
+  # passed over all that were observed
+  if (i>length(driver_frac)){
+    i <- 1 
+  }
+  # randomly assign the same fraction of drivers
+  # as actually used within the observed data
+  mygene <- allgenes[j]
+  tot_mut <- gene_cts[mygene]
+  num_driver <- ceiling(tot_mut * driver_frac[i])
+  driver_vec <- sample(c(rep("driver", num_driver), rep("passenger", tot_mut-num_driver)))
+  featDf[featDf["gene"]==mygene,"class"] <- driver_vec
+
+  # update counters
+  i <- i+1
+  j <- j+1
+  # update number of assigned drivers
+  num_driver_sum <- num_driver_sum + num_driver
+}
+
+#featDf[,"class"] <- sample(featDf$class)
+
+# fix factor
+featDf[,"class"] <- as.factor(featDf$class)
 
 # setup driver pred cols
 driverCols <- c('driver')
@@ -74,11 +112,8 @@ rf.model <- randomForest(class ~ . - gene - strata - driver - passenger,
                          data=featDf)
 
 # save result
-result <- predict(rf.model, type="prob")
-#result <- rf.model$predicted
-featDf[rownames(result), c('driver', 'passenger')] <- result
-featDf["ID"] <- idCol
-featDf["UID"] <- uidCol
-write.table(featDf, opt$output, sep='\t')
+#result <- predict(rf.model, featDf, type="prob")
+#featDf[rownames(result), c('driver', 'passenger')] <- result
+#featDf["ID"] <- idCol
+#featDf["UID"] <- uidCol
 write.table(rf.model$importance, opt$varimp, sep='\t')
-save(rf.model, file=opt$trained_mod_file)
