@@ -504,7 +504,7 @@ rule runChasmTranscript:
     params:
         input_prefix=join(benchmark_dir, 'snvbox_input/{benchmark}')
     output:
-        join(benchmark_dir, 'methods/output/{benchmark}.chasm_output.txt')
+        join(benchmark_dir, 'methods/output/{benchmark,berger_et_al|berger_et_al_egfr|kim_et_al|iarc_tp53}.chasm_output.txt')
     shell:
         "python scripts/benchmark/merge_chasm_result.py "
         "   -i {params.input_prefix} "
@@ -518,7 +518,7 @@ rule runChasmTranscriptDriver:
         orig_chasm_dir=orig_chasm_dir,
         chasm_model='driver{citer}'
     output:
-        output_file=abspath(join(benchmark_dir, 'snvbox_input/{benchmark}_chasm_input{citer}driver{citer}.output'))
+        output_file=abspath(join(benchmark_dir, 'snvbox_input/{benchmark,berger_et_al|berger_et_al_egfr|kim_et_al|iarc_tp53}_chasm_input{citer}driver{citer}.output'))
     shell:
         """
         cd {params.orig_chasm_dir}
@@ -534,7 +534,7 @@ rule runChasmTranscriptPassenger:
         orig_chasm_dir=orig_chasm_dir,
         chasm_model='driver0'
     output:
-        output_file=abspath(join(benchmark_dir, 'snvbox_input/{benchmark}_chasm_input_passengerdriver0.output'))
+        output_file=abspath(join(benchmark_dir, 'snvbox_input/{benchmark,berger_et_al|berger_et_al_egfr|kim_et_al|iarc_tp53}_chasm_input_passengerdriver0.output'))
     shell:
         """
         cd {params.orig_chasm_dir}
