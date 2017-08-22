@@ -28,10 +28,10 @@ def parse_arguments():
 
 def main(opts):
     useful_cols = ['Hugo_Symbol',
-                   #'Transcript_ID',
-                   'HGVSp_Short',
-                   'ID',
-                   'class']
+                #'Transcript_ID',
+                'HGVSp_Short',
+                'ID',
+                'class']
     # pattern = os.path.join(opts['input_dir'], 'driver_snvbox_inputdriver*.txt')
     df_list = []
     for i in range(10):
