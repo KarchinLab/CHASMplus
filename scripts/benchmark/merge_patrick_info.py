@@ -28,7 +28,7 @@ def parse_arguments():
 def main(opts):
     # read data
     df = pd.read_table(opts['input'])
-    coord_df = pd.read_table(opts['genomic_coord']).drop_duplicates()
+    coord_df = pd.read_table(opts['genomic_coord']).drop_duplicates(subset=['input'])
 
     # keep only missense mutations
     df = df[df.aa.str.match('^[A-Z][0-9]+[A-Z]$')]
@@ -53,7 +53,11 @@ def main(opts):
     df['HGVSp_Short'] = 'p.' + df['aa']
     df['Strand'] = '+'
     df['Variant_Classification'] = 'Missense_Mutation'
-    df = df.rename(columns={'gene': 'Hugo_Symbol', 'consensus_high_call_DF0629': 'status'})
+    df = df.rename(columns={'gene': 'Hugo_Symbol', 'consensus_high_call_DF0629': 'class'})
+
+    # drop mutations which are likely insertion/deletions based on not being
+    # in substitution format
+    df = df[~df.Reference_Allele.isnull()]
 
     # save merged results
     df.to_csv(opts['output'], sep='\t', index=False)
