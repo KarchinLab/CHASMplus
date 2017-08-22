@@ -3,7 +3,7 @@ configfile: "chasm2/data/config.yaml"
 
 # important variables
 mutations=config['mutations']
-benchmk=config['benchmark']
+#benchmk=config['benchmark']
 #snvbox=config['snvbox']
 hotmaps_null=config['hotmaps_null']
 benchmark_dir=config['benchmark_dir']
@@ -40,20 +40,17 @@ rule perform_benchmark:
         expand(join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt'), benchmark=mybenchmarks),
         expand(join(benchmark_dir, 'methods/output/{benchmark}.transfic_output.txt'), benchmark=mybenchmarks),
         expand(abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark}.annovar_output.hg19_multianno.txt')), benchmark=mybenchmarks),
+        expand(join(benchmark_dir, 'methods/output/{benchmark}.chasm_output.txt'), benchmark=mybenchmarks)
 
 rule perform_benchmark_maflike:
     input:
         # benchmarks from MAF like files
-        expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.chasm2_output.txt'), benchmark_maf=mybenchmarks_maf),
-        #expand(join(benchmark_dir, 'methods/input/{benchmark_maf}.fathmm_input.txt'), benchmark_maf=mybenchmarks_maf),
+        expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.chasm2_output.txt'), benchmark_maf=mybenchmarks_maf[:-1]),
         expand(join(benchmark_dir, "methods/output/{benchmark_maf}.candra_output.txt"), benchmark_maf=mybenchmarks_maf),
         expand(abspath(join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output.hg19_multianno.txt')), benchmark_maf=mybenchmarks_maf),
         expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.transfic_output.txt'), benchmark_maf=mybenchmarks_maf),
         expand(abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark_maf}.annovar_output.hg19_multianno.txt')), benchmark_maf=mybenchmarks_maf),
         expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.chasm_output.txt'), benchmark_maf=mybenchmarks_maf)
-        #expand(join(benchmark_dir, '{benchmark_maf}_chasm_input{chasm_iter}driver{chasm_iter}.output'), chasm_iter=range(10), benchmark_maf=mybenchmarks_maf),
-        #expand(join(benchmark_dir, '{benchmark_maf}_chasm_input_passengerdriver0.output'), benchmark_maf=mybenchmarks_maf)
-
 
 ####################
 # CHASM2
@@ -99,7 +96,7 @@ rule mergeAdditionalFeaturesBenchmarkMaf:
         snvbox=join(benchmark_dir, 'snvbox_output/features_{benchmark_maf}.txt'),
         mutations=mutations
     output:
-        join(benchmark_dir, 'snvbox_output/features_{benchmark_maf,patrick_et_al|msk_impact|mc3}_merged.txt')
+        join(benchmark_dir, 'snvbox_output/features_{benchmark_maf,patrick_et_al|msk_impact}_merged.txt')
     shell:
         "python chasm2/console/chasm.py mergeBenchmarkFeatures "
         "   -m {input.mutations} "
@@ -117,7 +114,7 @@ rule mafToBed:
     input:
         mutations=join(benchmark_dir, '{benchmark_maf}.maf')
     output:
-        bed_out=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}.bed')
+        bed_out=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}.bed')
     shell:
         "python scripts/maf_to_bed.py "
         "   -i {input.mutations} "
@@ -129,8 +126,8 @@ rule liftover:
         bed_in=join(benchmark_dir, 'snvbox_input/{benchmark_maf}.bed'),
         chain='chasm2/data/hg19ToHg38.over.chain.gz'
     output:
-        bed_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}_hg38.bed'),
-        unmapped=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}.unmapped.bed')
+        bed_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}_hg38.bed'),
+        unmapped=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}.unmapped.bed')
     shell:
         "liftOver {input.bed_in} {input.chain} {output.bed_hg38} {output.unmapped}"
 
@@ -140,7 +137,7 @@ rule liftoverMaf:
         bed_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf}_hg38.bed'),
         mutations=join(benchmark_dir, '{benchmark_maf}.maf')
     output:
-        mutations_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact|mc3}.hg38.maf')
+        mutations_hg38=join(benchmark_dir, 'snvbox_input/{benchmark_maf,patrick_et_al|msk_impact}.hg38.maf')
     shell:
         "python scripts/create_hg38_maf.py "
         "   -i {input.bed_hg38} "
@@ -499,26 +496,84 @@ rule runParssnpMaf:
 # Original CHASM
 ######################
 
-#rule runChasmTranscriptDriver:
-    #input:
-        #expand(join(benchmark_dir, ))
-    #params:
-        #mydir=
-    #output:
-    #shell:
-        #"""
-        #mydir=$1
-        #for i in {0..9} ; do
-            #echo "Fold $i . . ."
-            #cd /mnt/disk003/projects/CVS-dev/CHASM
-            #./RunChasm driver`echo $i` $mydir/driver_snvbox_input`echo $i`.txt
-            #cd -
-        #done
-        #echo "Passengers . . ."
-        #cd /mnt/disk003/projects/CVS-dev/CHASM
-        #./RunChasm driver0 $mydir/passenger_snvbox_input.txt
-        #"""
+## CHASM for transcript format ##
+rule runChasmTranscript:
+    input:
+        expand(abspath(join(benchmark_dir, 'snvbox_input/{{benchmark}}_chasm_input{citer}driver{citer}.output')), citer=range(10)),
+        abspath(join(benchmark_dir, 'snvbox_input/{benchmark}_chasm_input_passengerdriver0.output'))
+    params:
+        input_prefix=join(benchmark_dir, 'snvbox_input/{benchmark}')
+    output:
+        join(benchmark_dir, 'methods/output/{benchmark}.chasm_output.txt')
+    shell:
+        "python scripts/benchmark/merge_chasm_result.py "
+        "   -i {params.input_prefix} "
+        "   -o {output}"
 
+rule runChasmTranscriptDriver:
+    input:
+        abspath(join(benchmark_dir, 'snvbox_input/{benchmark}_chasm_input{citer}.txt')),
+    params:
+        work_dir=join(benchmark_dir, 'snvbox_input'),
+        orig_chasm_dir=orig_chasm_dir,
+        chasm_model='driver{citer}'
+    output:
+        output_file=abspath(join(benchmark_dir, 'snvbox_input/{benchmark}_chasm_input{citer}driver{citer}.output'))
+    shell:
+        """
+        cd {params.orig_chasm_dir}
+        python2.7 RunChasm {params.chasm_model} {input} 
+        cd -
+        """
+
+rule runChasmTranscriptPassenger:
+    input:
+        abspath(join(benchmark_dir, 'snvbox_input/{benchmark}_chasm_input_passenger.txt')),
+    params:
+        work_dir=join(benchmark_dir, 'snvbox_input'),
+        orig_chasm_dir=orig_chasm_dir,
+        chasm_model='driver0'
+    output:
+        output_file=abspath(join(benchmark_dir, 'snvbox_input/{benchmark}_chasm_input_passengerdriver0.output'))
+    shell:
+        """
+        cd {params.orig_chasm_dir}
+        python2.7 RunChasm {params.chasm_model} {input} 
+        """
+
+rule prepChasmTxInput:
+    input:
+        # mutation files
+        berger=join(benchmark_dir, 'berger_et_al.txt'),
+        berger_egfr=join(benchmark_dir, 'berger_et_al_egfr.txt'),
+        kim=join(benchmark_dir, 'kim_et_al.txt'),
+        iarc_tp53=join(benchmark_dir, 'iarc_tp53.txt'),
+        # preferred transcript files
+        berger_tx=join(benchmark_dir, 'preferred_tx/berger_et_al.preferred_tx.txt'),
+        berger_egfr_tx=join(benchmark_dir, 'preferred_tx/berger_et_al_egfr.preferred_tx.txt'),
+        kim_tx=join(benchmark_dir, 'preferred_tx/kim_et_al.preferred_tx.txt'),
+        iarc_tp53_tx=join(benchmark_dir, 'preferred_tx/iarc_tp53.preferred_tx.txt')
+    params:
+        outdir=join(benchmark_dir, 'snvbox_input'),
+        chasm_dir=orig_chasm_dir
+    output:
+        expand(abspath(join(benchmark_dir, 'snvbox_input/berger_et_al_chasm_input{num}.txt')),num=range(10)),
+        expand(abspath(join(benchmark_dir, 'snvbox_input/berger_et_al_egfr_chasm_input{num}.txt')),num=range(10)),
+        expand(abspath(join(benchmark_dir, 'snvbox_input/kim_et_al_chasm_input{num}.txt')),num=range(10)),
+        expand(abspath(join(benchmark_dir, 'snvbox_input/iarc_tp53_chasm_input{num}.txt')),num=range(10)),
+        abspath(join(benchmark_dir, 'snvbox_input/berger_et_al_chasm_input_passenger.txt')),
+        abspath(join(benchmark_dir, 'snvbox_input/berger_et_al_egfr_chasm_input_passenger.txt')),
+        abspath(join(benchmark_dir, 'snvbox_input/kim_et_al_chasm_input_passenger.txt')),
+        abspath(join(benchmark_dir, 'snvbox_input/iarc_tp53_chasm_input_passenger.txt'))
+    shell:
+        """
+        python scripts/benchmark/create_kim_snvbox_input.py -i {input.kim} -p {input.kim_tx} -pf kim_et_al -c {params.chasm_dir}/drivers_gene_crossval -o {params.outdir}
+        python scripts/benchmark/create_berger_snvbox_input.py -i {input.berger} -p {input.berger_tx} -pf berger_et_al -c {params.chasm_dir}/drivers_gene_crossval -o {params.outdir}
+        python scripts/benchmark/create_berger_snvbox_input.py -i {input.berger_egfr} -p {input.berger_egfr_tx} -pf berger_et_al_egfr -c {params.chasm_dir}/drivers_gene_crossval -o {params.outdir}
+        python scripts/benchmark/create_tp53_snvbox_input.py -i {input.iarc_tp53} -p {input.iarc_tp53_tx} -pf iarc_tp53 -c {params.chasm_dir}/drivers_gene_crossval -o {params.outdir}
+        """
+
+## CHASM for MAF files ##
 rule runChasmMaf:
     input:
         expand(abspath(join(benchmark_dir, 'snvbox_input/{{benchmark_maf}}_chasm_input{chasm_iter}driver{chasm_iter}.output')), chasm_iter=range(10)),
@@ -530,6 +585,7 @@ rule runChasmMaf:
     shell:
         "python scripts/benchmark/merge_chasm_result.py "
         "   -i {params.input_prefix} "
+        "   --use-maf "
         "   -o {output}"
 
 rule runChasmMafDriver:

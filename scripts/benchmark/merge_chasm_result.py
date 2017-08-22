@@ -16,6 +16,9 @@ def parse_arguments():
     parser.add_argument('-i', '--input-dir',
                         type=str, required=True,
                         help='Directory containing files, including file prefix')
+    parser.add_argument('-u', '--use-maf',
+                        action='store_true', default=False,
+                        help='Whether results used a maf file')
     parser.add_argument('-o', '--output',
                         type=str, required=True,
                         help='output file')
@@ -34,23 +37,27 @@ def main(opts):
     for i in range(10):
         path = opts['input_dir'] + '_chasm_input{0}driver{0}.output'.format(i)
         chasm_result = pd.read_table(path)
-        path = opts['input_dir'] + '_split_driver{0}.txt'.format(i)
-        mut_df = pd.read_table(path, usecols=useful_cols)
-        #mut_df['MutationID'] = range(len(mut_df))
-        merged = pd.merge(chasm_result, mut_df,
-                          left_on='MutationID', right_on='ID',
-                          how='left')
-        df_list.append(merged)
+        if opts['use_maf']:
+            path = opts['input_dir'] + '_split_driver{0}.txt'.format(i)
+            mut_df = pd.read_table(path, usecols=useful_cols)
+            merged = pd.merge(chasm_result, mut_df,
+                            left_on='MutationID', right_on='ID',
+                            how='left')
+            df_list.append(merged)
+        else:
+            df_list.append(chasm_result)
     # get the passenger data
     path = opts['input_dir'] + '_chasm_input_passengerdriver0.output'
     chasm_result = pd.read_table(path)
-    path = opts['input_dir'] + '_split_passenger.txt'.format(i)
-    mut_df = pd.read_table(path, usecols=useful_cols)
-    #mut_df['MutationID'] = range(len(mut_df))
-    merged = pd.merge(chasm_result, mut_df,
-                      left_on='MutationID', right_on='ID',
-                      how='left')
-    df_list.append(merged)
+    if opts['use_maf']:
+        path = opts['input_dir'] + '_split_passenger.txt'.format(i)
+        mut_df = pd.read_table(path, usecols=useful_cols)
+        merged = pd.merge(chasm_result, mut_df,
+                        left_on='MutationID', right_on='ID',
+                        how='left')
+        df_list.append(merged)
+    else:
+        df_list.append(chasm_result)
 
     # save results
     full_df = pd.concat(df_list)
