@@ -24,6 +24,7 @@ def parse_arguments():
 
 def main(opts):
     df = pd.read_table(opts['input'])
+
     out_cols = ['Chromosome', 'Start_Position', 'End_Position',
                 'Reference_Allele', 'Tumor_Seq_Allele2']
     df[out_cols].to_csv(opts['output'], sep='\t', index=False, header=None)
