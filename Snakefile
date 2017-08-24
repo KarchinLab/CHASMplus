@@ -50,6 +50,7 @@ rule chasm2:
 #########################
 # Run a pre-trained model
 #########################
+# computes features with provided data and a null distribution
 rule chasm2_pretrained:
     input:
         null=join(output_dir, "chasm2_null_distribution_pretrained.txt"),
@@ -63,6 +64,7 @@ rule chasm2_pretrained:
         "   -t {input.ttplus} "
         "   -nd {input.null} "
         "   -o {output}"
+
 
 #########################
 # Run CHASM2 on the observed data
@@ -185,6 +187,52 @@ rule cv_pretrained_test:
         "   -t {params.model_dir} "
         "   -o {output}"
 
+
+########################
+# permutation importance
+########################
+rule variable_importance:
+    input:
+        expand(join(output_dir, 'variable_importance/variable_importance{permute_iter}.txt'), permute_iter=range(1,1001)),
+        obs_imp=join(output_dir, 'variable_importance/variable_importance.txt'),
+    params:
+        varimp_dir=join(output_dir, 'variable_importance')
+    output:
+        join(output_dir, 'variable_importance/feature_importance_result.txt')
+    shell:
+        "python scripts/compute_feature_importance.py "
+        "   -i {input.obs_imp} "
+        "   -p {params.varimp_dir} "
+        "   -o {output}"
+
+
+rule observed_importance:
+    input:
+        features=join(output_dir, 'snvbox_features_merged.txt')
+    output:
+        imp=join(output_dir, 'variable_importance/variable_importance.txt'),
+        model=join(output_dir, 'variable_importance/chasm2.Rdata'), 
+        result=join(output_dir, 'variable_importance/chasm2_result.txt') 
+    shell:
+        "Rscript chasm2/r/train.R "
+        "   -i {input.features} "
+        "   -v {output.imp} "
+        "   -t {output.model} "
+        "   -o {output.result}"
+
+rule permuted_importance:
+    input:
+        features=join(output_dir, 'snvbox_features_merged.txt')
+    params:
+        iter='{permute_iter}'
+    output:
+        join(output_dir, 'variable_importance/variable_importance{permute_iter}.txt') 
+    shell:
+        "Rscript chasm2/r/permute.R "
+        "   -i {input.features} "
+        "   -s {params.iter} "
+        "   -v {output}"
+
 #########################
 # Handle simuated mutations
 #########################
@@ -295,6 +343,7 @@ rule simCvTestPretrained:
 rule predict_ttplus_only:
     input:
         trained_classifier=join(output_dir, "trained.Rdata"),
+        #trained_classifier=join(output_dir, "2020plus.Rdata"),
         sim_features=join(output_dir, "simulated_summary/simulated_features{iter}.txt"),
     params:
         outdir=join(output_dir, "simulated_summary/2020plus/sim{iter,[0-9]+}")
