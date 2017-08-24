@@ -22,7 +22,7 @@ def parse_arguments():
                         help='Input is feature file from snvget output')
     parser.add_argument('-mh', '--mysql-host',
                         type=str,
-                        default='karchin-db01.icm.jhu.edu',
+                        default='karchin-db01',
                         help='Host name for mysql')
     parser.add_argument('-mdb', '--mysql-db',
                         type=str,
