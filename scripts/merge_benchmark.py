@@ -81,6 +81,7 @@ def read_annovar(path):
                 'SIFT', 'MutationAssessor', 'SIFT', 'REVEL', 'MCAP']
     return df[out_cols]
 
+
 def read_parssnp(path):
     df = pd.read_table(path, na_values=['.'])
     df['UID'] = range(len(df))
@@ -154,6 +155,7 @@ def main(opts):
         # save results
         output_path = os.path.join(bench_dir, 'methods/output/{0}_results.txt'.format(b))
         merged_df.to_csv(output_path, sep='\t', index=False)
+
 
 if __name__ == '__main__':
     opts = parse_arguments()
