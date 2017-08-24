@@ -52,13 +52,13 @@ def main(opts):
     # read iarc mutations
     df = pd.read_table(opts['iarc_tp53'])
     df['mutation'] = df['AAchange']
-    df['gene'] = 'TP53'
+    df['Hugo_Symbol'] = 'TP53'
 
     # read preferred snvbox transcripts
     tx_df = pd.read_table(opts['preferred_tx'])
 
     # merge the two
-    merged_df = pd.merge(df, tx_df, on='gene')
+    merged_df = pd.merge(df, tx_df, on='Hugo_Symbol')
 
     # add a UID column
     merged_df['UID'] = range(len(merged_df))
@@ -68,12 +68,12 @@ def main(opts):
     if opts['cross_val_dir']:
         training_genes, all_training = read_cross_val(opts['cross_val_dir'])
         if not os.path.exists(opts['output']): os.mkdir(opts['output'])
-        tmp = merged_df[~merged_df['gene'].isin(all_training)]
+        tmp = merged_df[~merged_df['Hugo_Symbol'].isin(all_training)]
         save_path = os.path.join(opts['output'], opts['prefix']+'_chasm_input_passenger.txt')
         tmp[mycols].to_csv(save_path, index=False, sep=' ', header=None)
         for i in range(10):
             test_genes = all_training - set(training_genes[i])
-            tmp = merged_df[merged_df['gene'].isin(test_genes)]
+            tmp = merged_df[merged_df['Hugo_Symbol'].isin(test_genes)]
             save_path = os.path.join(opts['output'], opts['prefix']+'_chasm_input{0}.txt'.format(i))
             tmp[mycols].to_csv(save_path, index=False, header=None, sep=' ')
     else:
