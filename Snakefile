@@ -48,7 +48,25 @@ rule chasm2:
         "   -o {output}"
 
 #########################
-# Run a pre-trained model
+# Run full pancancer model
+# trained on all the data
+#########################
+rule chasm2_trained:
+    input:
+        null=join(output_dir, "chasm2_null_distribution_trained.txt"),
+        chasm=join(output_dir, 'trained_model/chasm2_result.txt'), 
+        ttplus=join(output_dir, 'output/results/r_random_forest_prediction.txt')
+    output:
+        join(output_dir, 'chasm2_result_trained_final.txt')
+    shell:
+        "python chasm2/console/chasm.py combinedScore"
+        "   -c {input.chasm} "
+        "   -t {input.ttplus} "
+        "   -nd {input.null} "
+        "   -o {output}"
+
+#########################
+# Run a pre-trained cv model
 #########################
 # computes features with provided data and a null distribution
 rule chasm2_pretrained:
@@ -141,10 +159,12 @@ rule hotmaps:
         "   -m {input.mutations} "
         "   -w {params.window} "
         "   -p {threads} "
-        "   -n 1000 "
+        "   -n 10000 "
         "   --report-index "
         "   -o {output.result} "
         "   -nd {output.null}"
+
+### gene cross-validated model ###
 
 # train a gene-hold-out cross-validated model
 rule cv_train:
@@ -187,6 +207,35 @@ rule cv_pretrained_test:
         "   -t {params.model_dir} "
         "   -o {output}"
 
+### trained model ###
+# train the full model
+rule trainFullChasm2:
+    input:
+        features=join(output_dir, 'snvbox_features_merged.txt')
+    output:
+        imp=join(output_dir, 'trained_model/variable_importance.txt'),
+        model=join(output_dir, 'trained_model/chasm2.Rdata'), 
+        result=join(output_dir, 'trained_model/chasm2_result.txt') 
+    shell:
+        "Rscript chasm2/r/train.R "
+        "   -i {input.features} "
+        "   -v {output.imp} "
+        "   -t {output.model} "
+        "   -o {output.result}"
+
+# score mutations based on a gene-hold-out cross-validation model
+# previously saved.
+rule simTest:
+    input:
+        model=join(output_dir, 'trained_model/chasm2.Rdata'), 
+        features=join(output_dir, 'simulated_summary/snvbox_features_merged_{iter}.txt')
+    output:
+        join(output_dir, 'simulated_summary/chasm2_trained/chasm2_result{iter,[0-9]+}.txt') 
+    shell:
+        "Rscript chasm2/r/test.R "
+        "   -i {input.features} "
+        "   -t {input.model} "
+        "   -o {output}"
 
 ########################
 # permutation importance
@@ -303,7 +352,7 @@ rule simHotmaps:
         "   -m {input.mutations} "
         "   -w {params.window} "
         "   -p {threads} "
-        "   -n 1000 "
+        "   -n 10000 "
         "   --report-index "
         "   -o {output.result} "
 
@@ -392,6 +441,23 @@ rule nullDistribution:
         "   -c {params.chasm_sim_dir} "
         "   -o {output}"
 
+# null dist using a model trained on all of the data
+rule nullDistributionTrain:
+    input:
+        expand(join(output_dir, "simulated_summary/2020plus/sim{iter}/results/r_random_forest_prediction.txt"), iter=iters),
+        expand(join(output_dir, "simulated_summary/chasm2_trained/chasm2_result{iter}.txt"), iter=iters)
+    params:
+        ttplus_sim_dir=join(output_dir, "simulated_summary/2020plus"),
+        chasm_sim_dir=join(output_dir, 'simulated_summary/chasm2_trained')
+    output:
+        join(output_dir, "chasm2_null_distribution_trained.txt")
+    shell:
+        "python chasm2/console/chasm.py nullDistribution "
+        "   -t {params.ttplus_sim_dir} "
+        "   -c {params.chasm_sim_dir} "
+        "   -o {output}"
+
+# pretrained cv model null dist
 rule nullDistributionPretrained:
     input:
         expand(join(output_dir, "simulated_summary/2020plus_pretrained/sim{iter}/results/r_random_forest_prediction.txt"), iter=iters),
@@ -406,7 +472,6 @@ rule nullDistributionPretrained:
         "   -t {params.ttplus_sim_dir} "
         "   -c {params.chasm_sim_dir} "
         "   -o {output}"
-
 
 #########################
 # Handle conversion to hg38
