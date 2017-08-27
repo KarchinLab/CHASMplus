@@ -103,6 +103,8 @@ def read_input(benchmark_dir, benchmark):
         df = pd.read_table(path)
         df['UID'] = range(len(df))
         df = df.drop_duplicates(subset=['Hugo_Symbol', 'HGVSp_Short'])
+        if 'Variant_Classification' in df.columns:
+            df = df[df['Variant_Classification']=='Missense_Mutation']
     else:
         path = os.path.join(benchmark_dir, '{0}.txt'.format(benchmark))
         df = pd.read_table(path)
@@ -117,7 +119,7 @@ def read_input(benchmark_dir, benchmark):
 
 def main(opts):
     bench_dir = opts['benchmark_dir']
-    maf_like = ['patrick_et_al', 'msk_impact']
+    maf_like = ['patrick_et_al', 'msk_impact', 'mc3']
     non_maf = ['berger_et_al', 'berger_et_al_egfr', 'kim_et_al', 'iarc_tp53']
     benchmarks = maf_like + non_maf
 
@@ -129,10 +131,13 @@ def main(opts):
         candra_in = os.path.join(bench_dir, 'methods/input/{0}.candra_input.txt'.format(b))
         candra_out = os.path.join(bench_dir, 'methods/output/{0}.candra_output.txt'.format(b))
         candra_df = read_candra(candra_in, candra_out)
+        candra_in = os.path.join(bench_dir, 'methods/input/{0}.candra_input.txt'.format(b))
+        candra_out = os.path.join(bench_dir, 'methods/output/{0}.candra_plus_output.txt'.format(b))
+        candra_plus_df = read_candra(candra_in, candra_out).rename(columns={'CanDrA': 'CanDrA plus'})
         chasm_path = os.path.join(bench_dir, 'methods/output/{0}.chasm_output.txt'.format(b))
         chasm_df = read_chasm(chasm_path)
         chasm2_path = os.path.join(bench_dir, 'methods/output/{0}.chasm2_output.txt'.format(b))
-        chasm2_df = read_chasm2(chasm2_path)
+        if b != 'mc3': chasm2_df = read_chasm2(chasm2_path)
         transfic_path = os.path.join(bench_dir, 'methods/output/{0}.transfic_output.txt'.format(b))
         transfic_df = read_transfic(transfic_path)
         annovar_path = os.path.join(bench_dir, 'methods/output/{0}.annovar_output.hg19_multianno.txt'.format(b))
@@ -148,8 +153,9 @@ def main(opts):
 
         # merge results
         merged_df = pd.merge(merged_df, candra_df, on='UID', how='left')
+        merged_df = pd.merge(merged_df, candra_plus_df, on='UID', how='left')
         merged_df = pd.merge(merged_df, chasm_df, on='UID', how='left')
-        merged_df = pd.merge(merged_df, chasm2_df, on='UID', how='left')
+        if b != 'mc3': merged_df = pd.merge(merged_df, chasm2_df, on='UID', how='left')
         merged_df = pd.merge(merged_df, transfic_df, on='UID', how='left')
 
         # save results
