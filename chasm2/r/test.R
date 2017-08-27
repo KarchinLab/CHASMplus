@@ -23,13 +23,15 @@ if ("getopt" %in% rownames(installed.packages())){
   opt <- list(ARGS=NULL)
 }
 # load model
-load(opts$trained_mod)
+load(opt$trained_mod)
 
 # read/process feature data frame
 featDf <- read.delim(opt$input)
 row.names(featDf) <- featDf$UID
 featDf <- featDf[!duplicated(featDf$ID),]
 colSelect <- -which(names(featDf) %in% c("UID", "ID"))
+idCol <- featDf$ID
+uidCol <- featDf$UID
 featDf <- featDf[, colSelect]
 
 # set up gene column for use as strata in random forest
@@ -38,26 +40,20 @@ featDf$gene <- geneVec
 featDf$strata <- geneVec
 featDf[featDf["class"]=="passenger", "strata"] <- "not_driver"
 featDf$strata<- factor(featDf$strata, levels=unique(featDf$strata))
-geneCounts <- table(featDf$strata)
-
-# normalize high counts
-#notCt <- geneCounts["not_driver"]
-medCount <- median(geneCounts)
-geneCounts[geneCounts > medCount] <- medCount
-totDriverCts <- sum(geneCounts[-which(names(geneCounts) %in% c("not_driver"))])
-geneCounts["not_driver"] <- totDriverCts
 
 # fill NA values
 mycols <- names(featDf)
-featureCols <- mycols[2:(length(mycols)-1)]
+featureCols <- mycols[2:(length(mycols)-2)]
 for(i in featureCols){
   featDf[is.na(featDf[,i]), i] <- mean(featDf[,i], na.rm=TRUE)
 }
 
 # perform random forest
-rf.model <- randomForest(class ~ . - gene - strata, 
-                         strata=featDf$strata, sampsize=geneCounts,
-                         data=featDf)
-result <- predict(rf.model, type="prob")
-finalDf <- cbind(featDf, result)
-write.table(finalDf, "../output/gene_features_1_26_2017/oob_predictions.txt", sep='\t')
+featDf['driver'] <- NaN
+featDf['passenger'] <- NaN
+result <- predict(rf.model, featDf, type="prob")
+featDf[rownames(result), c('driver', 'passenger')] <- result
+featDf["ID"] <- idCol
+featDf["UID"] <- uidCol
+#finalDf <- cbind(featDf, result)
+write.table(featDf, opt$output, sep='\t')
