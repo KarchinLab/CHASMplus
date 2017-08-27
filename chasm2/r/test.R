@@ -49,11 +49,10 @@ for(i in featureCols){
 }
 
 # perform random forest
-featDf['driver'] <- NaN
-featDf['passenger'] <- NaN
+featDf['driver'] <- 0
+featDf['passenger'] <- 0
 result <- predict(rf.model, featDf, type="prob")
-featDf[rownames(result), c('driver', 'passenger')] <- result
+featDf[, c('driver', 'passenger')] <- result
 featDf["ID"] <- idCol
 featDf["UID"] <- uidCol
-#finalDf <- cbind(featDf, result)
 write.table(featDf, opt$output, sep='\t')
