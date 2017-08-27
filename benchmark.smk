@@ -18,6 +18,7 @@ snvgettranscript="/mnt/disk003/projects/CVS-dev/SNVBox/snvGetTranscript"
 orig_chasm_dir="/mnt/disk003/projects/CVS-dev/CHASM/"
 
 # other methods
+candra_plus="methods/CanDrA.v+/open_candra.pl"
 candra="methods/CanDrA.v1.0/open_candra.pl"
 annovar="methods/annovar/table_annovar.pl"
 transfic="methods/transfic/bin/transf_scores.pl"
@@ -37,7 +38,8 @@ rule perform_benchmark:
         expand(join(benchmark_dir, 'methods/output/{benchmark}.chasm2_output.txt'), benchmark=mybenchmarks),
         expand(join(benchmark_dir, 'methods/input/{benchmark}.fathmm_input.txt'), benchmark=mybenchmarks),
         expand(join(benchmark_dir, "methods/output/{benchmark}.candra_output.txt"), benchmark=mybenchmarks),
-        expand(join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt'), benchmark=mybenchmarks),
+        expand(join(benchmark_dir, "methods/output/{benchmark}.candra_plus_output.txt"), benchmark=mybenchmarks),
+        expand(abspath(join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt')), benchmark=mybenchmarks),
         expand(join(benchmark_dir, 'methods/output/{benchmark}.transfic_output.txt'), benchmark=mybenchmarks),
         expand(abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark}.annovar_output.hg19_multianno.txt')), benchmark=mybenchmarks),
         expand(join(benchmark_dir, 'methods/output/{benchmark}.chasm_output.txt'), benchmark=mybenchmarks)
@@ -47,6 +49,7 @@ rule perform_benchmark_maflike:
         # benchmarks from MAF like files
         expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.chasm2_output.txt'), benchmark_maf=mybenchmarks_maf[:-1]),
         expand(join(benchmark_dir, "methods/output/{benchmark_maf}.candra_output.txt"), benchmark_maf=mybenchmarks_maf),
+        expand(join(benchmark_dir, "methods/output/{benchmark_maf}.candra_plus_output.txt"), benchmark_maf=mybenchmarks_maf),
         expand(abspath(join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output.hg19_multianno.txt')), benchmark_maf=mybenchmarks_maf),
         expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.transfic_output.txt'), benchmark_maf=mybenchmarks_maf),
         expand(abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark_maf}.annovar_output.hg19_multianno.txt')), benchmark_maf=mybenchmarks_maf),
@@ -79,7 +82,7 @@ rule mergeAdditionalFeaturesBenchmark:
         snvbox=join(benchmark_dir, 'snvbox_output/features_{benchmark}.txt'),
         mutations=mutations
     output:
-        join(benchmark_dir, 'snvbox_output/features_{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}_merged.txt')
+        join(benchmark_dir, 'snvbox_output/features_{benchmark,msk_impact|patrick_et_al}_merged.txt')
     shell:
         "python chasm2/console/chasm.py mergeBenchmarkFeatures "
         "   -m {input.mutations} "
@@ -329,7 +332,7 @@ rule prepCandraInput:
     input:
         join(benchmark_dir, 'snvbox_input/{benchmark}.snvbox_genomic.hg19.txt')
     output:
-        join(benchmark_dir, 'methods/input/{benchmark}.candra_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark,kim_et_al|berger_et_al|berger_et_al_egfr|iarc_tp53}.candra_input.txt')
     shell:
         "python scripts/benchmark/snvbox2candra.py -i {input} -o {output}"
 
@@ -348,9 +351,19 @@ rule runCandra:
     params:
         candra="perl {0}".format(candra)
     output:
-        join(benchmark_dir, "methods/output/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.candra_output.txt")
+        join(benchmark_dir, "methods/output/{benchmark,kim_et_al|berger_et_al|berger_et_al_egfr|iarc_tp53}.candra_output.txt")
     shell:
         "{params.candra} OVC {input} > {output}"
+
+rule runCandraPlus:
+    input:
+        join(benchmark_dir, "methods/input/{benchmark}.candra_input.txt")
+    params:
+        candra="perl {0}".format(candra_plus)
+    output:
+        join(benchmark_dir, "methods/output/{benchmark,kim_et_al|berger_et_al|berger_et_al_egfr|iarc_tp53}.candra_plus_output.txt")
+    shell:
+        "{params.candra} GENERAL {input} > {output}"
 
 rule runCandraMaf:
     input:
@@ -362,6 +375,16 @@ rule runCandraMaf:
     shell:
         "{params.candra} OVC {input} > {output}"
 
+rule runCandraMafPlus:
+    input:
+        join(benchmark_dir, "methods/input/{benchmark_maf}.candra_input.txt")
+    params:
+        candra="perl {0}".format(candra_plus)
+    output:
+        join(benchmark_dir, "methods/output/{benchmark_maf,patrick_et_al|msk_impact|mc3}.candra_plus_output.txt")
+    shell:
+        "{params.candra} GENERAL {input} > {output}"
+
 ##################
 # annovar
 ##################
@@ -369,7 +392,7 @@ rule prepAnnovarInput:
     input:
         join(benchmark_dir, 'snvbox_input/{benchmark}.snvbox_genomic.hg19.txt')
     output:
-        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.annovar_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark,kim_et_al|berger_et_al|berger_et_al_egfr|iarc_tp53}.annovar_input.txt')
     shell:
         "python scripts/benchmark/snvbox2annovar.py "
         "   -i {input} "
@@ -392,7 +415,8 @@ rule runAnnovar:
         annovar='perl {0}'.format(annovar),
         prefix=join(benchmark_dir, 'methods/output/{benchmark}.annovar_output')
     output:
-        join(benchmark_dir, 'methods/output/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.annovar_output.hg19_multianno.txt')
+        #join(benchmark_dir, 'methods/output/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.annovar_output.hg19_multianno.txt')
+        abspath(join(benchmark_dir, 'methods/output/{benchmark,kim_et_al|berger_et_al|berger_et_al_egfr|iarc_tp53}.annovar_output.hg19_multianno.txt'))
     shell:
         "{params.annovar} {input} -buildver hg19 methods/annovar/humandb -out {params.prefix} -remove -protocol refGene,ensGene,ljb26_all,revel,mcap -operation g,g,f,f,f -nastring NA"
 
@@ -417,7 +441,7 @@ rule prepFathmmInput:
         user=config['mysql_user'],
         passwd=config['mysql_passwd']
     output:
-        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.fathmm_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark,kim_et_al|berger_et_al|berger_et_al_egfr|iarc_tp53}.fathmm_input.txt')
     shell:
         "python scripts/benchmark/snvbox2fathmm.py -i {input} -o {output}"
         "   -i {input.infile} "
@@ -430,9 +454,9 @@ rule prepFathmmInput:
 #####################
 rule prepTransficInput:
     input:
-        join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt')
+        abspath(join(benchmark_dir, 'methods/output/{benchmark}.annovar_output.hg19_multianno.txt'))
     output:
-        join(benchmark_dir, 'methods/input/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.transfic_input.txt')
+        join(benchmark_dir, 'methods/input/{benchmark,kim_et_al|berger_et_al|berger_et_al_egfr|iarc_tp53}.transfic_input.txt')
     shell:
         "python scripts/benchmark/annovar2transfic.py "
         "   -i {input} "
@@ -455,7 +479,7 @@ rule runTransfic:
     params:
         transfic='perl {0}'.format(transfic)
     output:
-        join(benchmark_dir, 'methods/output/{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.transfic_output.txt')
+        join(benchmark_dir, 'methods/output/{benchmark,kim_et_al|berger_et_al|berger_et_al_egfr|iarc_tp53}.transfic_output.txt')
     shell:
         "{params.transfic} gosmf {input} {output}"
 
@@ -478,7 +502,7 @@ rule runParssnp:
     params:
         parssnp='Rscript {0}'.format(parssnp)
     output:
-        abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark,^(?!.*(patrick_et_al|msk_impact|mc3)).*$}.annovar_output.hg19_multianno.txt'))
+        abspath(join(benchmark_dir, 'methods/output/ParsSNP.output.{benchmark,kim_et_al|berger_et_al|berger_et_al_egfr|iarc_tp53}.annovar_output.hg19_multianno.txt'))
     shell:
         "{params.parssnp} {input}"
 
