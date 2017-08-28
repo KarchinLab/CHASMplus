@@ -48,6 +48,7 @@ rule perform_benchmark_maflike:
     input:
         # benchmarks from MAF like files
         expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.chasm2_output.txt'), benchmark_maf=mybenchmarks_maf[:-1]),
+        expand(join(benchmark_dir, 'methods/input/{benchmark_maf}.fathmm_input.txt'), benchmark_maf=mybenchmarks_maf),
         expand(join(benchmark_dir, "methods/output/{benchmark_maf}.candra_output.txt"), benchmark_maf=mybenchmarks_maf),
         expand(join(benchmark_dir, "methods/output/{benchmark_maf}.candra_plus_output.txt"), benchmark_maf=mybenchmarks_maf),
         expand(abspath(join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output.hg19_multianno.txt')), benchmark_maf=mybenchmarks_maf),
@@ -448,6 +449,21 @@ rule prepFathmmInput:
         "   --mysql-user {params.user} "
         "   --mysql-passwd {params.passwd} "
         "   -o {output} "
+
+rule prepFathmmInputMaf:
+    input:
+        join(benchmark_dir, 'snvbox_output/features_{benchmark_maf}_merged.txt')
+    params:
+        user=config['mysql_user'],
+        passwd=config['mysql_passwd']
+    output:
+        join(benchmark_dir, 'methods/input/{benchmark_maf,msk_impact|mc3|patrick_et_al}.fathmm_input.txt')
+    shell:
+        "python scripts/benchmark/snvbox2fathmm.py "
+        "   -i {input} "
+        "   --from-features "
+        "   --mysql-user {params.user} --mysql-passwd {params.passwd} "
+        "   -o {output}"
 
 #####################
 # transfic
