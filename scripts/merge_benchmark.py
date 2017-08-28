@@ -39,7 +39,8 @@ def read_fathmm(input_path, output_path,):
     merged_fathmm = pd.merge(fathmm_input_df, fathmm_output_df.drop_duplicates(subset=['Protein ID', 'Substitution']),
                              on=['Protein ID', 'Substitution'], how='left')
     merged_fathmm = merged_fathmm.rename(columns={'Score': 'FATHMM'})
-    return merged_fathmm
+    merged_fathmm['UID'] = range(len(merged_fathmm))
+    return merged_fathmm[['UID', 'FATHMM']]
 
 
 def read_chasm2(path):
@@ -134,6 +135,9 @@ def main(opts):
         candra_in = os.path.join(bench_dir, 'methods/input/{0}.candra_input.txt'.format(b))
         candra_out = os.path.join(bench_dir, 'methods/output/{0}.candra_plus_output.txt'.format(b))
         candra_plus_df = read_candra(candra_in, candra_out).rename(columns={'CanDrA': 'CanDrA plus'})
+        fathmm_in = os.path.join(bench_dir, 'methods/input/{0}.fathmm_input.txt'.format(b))
+        fathmm_out = os.path.join(bench_dir, 'methods/output/{0}.fathmm_output.txt'.format(b))
+        fathmm_df = read_fathmm(fathmm_in, fathmm_out)
         chasm_path = os.path.join(bench_dir, 'methods/output/{0}.chasm_output.txt'.format(b))
         chasm_df = read_chasm(chasm_path)
         chasm2_path = os.path.join(bench_dir, 'methods/output/{0}.chasm2_output.txt'.format(b))
@@ -154,6 +158,7 @@ def main(opts):
         # merge results
         merged_df = pd.merge(merged_df, candra_df, on='UID', how='left')
         merged_df = pd.merge(merged_df, candra_plus_df, on='UID', how='left')
+        merged_df = pd.merge(merged_df, fathmm_df, on='UID', how='left')
         merged_df = pd.merge(merged_df, chasm_df, on='UID', how='left')
         if b != 'mc3': merged_df = pd.merge(merged_df, chasm2_df, on='UID', how='left')
         merged_df = pd.merge(merged_df, transfic_df, on='UID', how='left')
