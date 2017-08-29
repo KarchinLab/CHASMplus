@@ -159,7 +159,7 @@ rule hotmaps:
         "   -m {input.mutations} "
         "   -w {params.window} "
         "   -p {threads} "
-        "   -n 10000 "
+        "   -n 1000 "
         "   --report-index "
         "   -o {output.result} "
         "   -nd {output.null}"
@@ -352,7 +352,7 @@ rule simHotmaps:
         "   -m {input.mutations} "
         "   -w {params.window} "
         "   -p {threads} "
-        "   -n 10000 "
+        "   -n 1000 "
         "   --report-index "
         "   -o {output.result} "
 
