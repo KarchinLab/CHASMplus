@@ -80,6 +80,9 @@ def main(opts):
     #df['Start_Position'] = df['Start_Position'] - 1
     df['Chromosome'] = 'chr' + df['Chromosome'].astype(str)
     if 'ID' not in df.columns: df['ID'] = list(range(len(df)))
+    if 'CODE' not in df.columns: df['CODE'] = ''
+
+    # filter data frame
     cols = ['ID', 'Chromosome', 'Start_Position', #'End_Position',
             'mystrand', 'Reference_Allele', 'Tumor_Seq_Allele2'] #, 'oncogenic']
     is_single = (df['Reference_Allele'].str.len()==1) & (df['Tumor_Seq_Allele2'].str.len()==1)
@@ -98,7 +101,7 @@ def main(opts):
         for i, row in df.iterrows():
             if row['Tumor_Sample_Barcode'] in high_count_samps:
                 is_driver.append(False)
-            elif row['Hugo_Symbol'] in signif_gene_dict[row['CODE']]:
+            elif row['Hugo_Symbol'] in signif_gene_dict.get(row['CODE'], []):
                 is_driver.append(True)
             else:
                 is_driver.append(False)
