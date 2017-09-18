@@ -83,7 +83,7 @@ rule mergeAdditionalFeaturesBenchmark:
         snvbox=join(benchmark_dir, 'snvbox_output/features_{benchmark}.txt'),
         mutations=mutations
     output:
-        join(benchmark_dir, 'snvbox_output/features_{benchmark,msk_impact|patrick_et_al}_merged.txt')
+        join(benchmark_dir, 'snvbox_output/features_{benchmark,berger_et_al|berger_et_al_egfr|iarc_tp53|kim_et_al}_merged.txt')
     shell:
         "python chasm2/console/chasm.py mergeBenchmarkFeatures "
         "   -m {input.mutations} "
