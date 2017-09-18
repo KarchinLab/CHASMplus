@@ -61,9 +61,11 @@ def main(opts):
 
     # filtering
     if 'Variant_Classification' in df.columns:
-        num_aas = df.HGVSp_Short.str.findall('[A-Z]').str.len()
+        #num_aas = df.HGVSp_Short.str.findall('[A-Za-z]').str.len()
+        is_missense_format = df.HGVSp_Short.str.match('^p.[A-Z][0-9]+[A-Z]$')
         is_missense = df['Variant_Classification']=='Missense_Mutation'
-        df = df[is_missense & (num_aas==2)]
+        #df = df[is_missense & (num_aas==2)]
+        df = df[is_missense & is_missense_format]
 
     df['Protein_position'] = df['HGVSp_Short'].str[3:-1].astype(int)
     query_genes = df['Hugo_Symbol'].unique()
