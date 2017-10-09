@@ -32,14 +32,19 @@ def read_candra(input_path, output_path):
     return merged[out_cols]
 
 
-def read_fathmm(input_path, output_path,):
+def read_fathmm(input_path, output_path, uid_path):
     """Read FATHMM results."""
-    fathmm_input_df = pd.read_table(input_path, header=None, sep=' ', names=['Protein ID', 'Substitution'])
+    fathmm_input_df = pd.read_table(input_path, header=None,
+                                    sep=' ', names=['Protein ID', 'Substitution'])
     fathmm_output_df = pd.read_table(output_path)
     merged_fathmm = pd.merge(fathmm_input_df, fathmm_output_df.drop_duplicates(subset=['Protein ID', 'Substitution']),
                              on=['Protein ID', 'Substitution'], how='left')
     merged_fathmm = merged_fathmm.rename(columns={'Score': 'FATHMM'})
-    merged_fathmm['UID'] = range(len(merged_fathmm))
+    if uid_path is None:
+        merged_fathmm['UID'] = range(len(merged_fathmm))
+    else:
+        uid = pd.read_table(uid_path)
+        merged_fathmm['UID'] = uid['UID']
     return merged_fathmm[['UID', 'FATHMM']]
 
 
@@ -137,7 +142,10 @@ def main(opts):
         candra_plus_df = read_candra(candra_in, candra_out).rename(columns={'CanDrA': 'CanDrA plus'})
         fathmm_in = os.path.join(bench_dir, 'methods/input/{0}.fathmm_input.txt'.format(b))
         fathmm_out = os.path.join(bench_dir, 'methods/output/{0}.fathmm_output.txt'.format(b))
-        fathmm_df = read_fathmm(fathmm_in, fathmm_out)
+        fathmm_uid = os.path.join(bench_dir, 'methods/input/{0}.fathmm_uids.txt'.format(b))
+        if not os.path.exists(fathmm_uid):
+            fathmm_uid = None
+        fathmm_df = read_fathmm(fathmm_in, fathmm_out, fathmm_uid)
         chasm_path = os.path.join(bench_dir, 'methods/output/{0}.chasm_output.txt'.format(b))
         chasm_df = read_chasm(chasm_path)
         chasm2_path = os.path.join(bench_dir, 'methods/output/{0}.chasm2_output.txt'.format(b))
