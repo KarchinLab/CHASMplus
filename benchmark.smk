@@ -49,6 +49,7 @@ rule perform_benchmark_maflike:
         # benchmarks from MAF like files
         expand(join(benchmark_dir, 'methods/output/{benchmark_maf}.chasm2_output.txt'), benchmark_maf=mybenchmarks_maf[:-1]),
         expand(join(benchmark_dir, 'methods/input/{benchmark_maf}.fathmm_input.txt'), benchmark_maf=mybenchmarks_maf),
+        expand(join(benchmark_dir, 'methods/input/{benchmark_maf}.fathmm_uids.txt'), benchmark_maf=mybenchmarks_maf),
         expand(join(benchmark_dir, "methods/output/{benchmark_maf}.candra_output.txt"), benchmark_maf=mybenchmarks_maf),
         expand(join(benchmark_dir, "methods/output/{benchmark_maf}.candra_plus_output.txt"), benchmark_maf=mybenchmarks_maf),
         expand(abspath(join(benchmark_dir, 'methods/output/{benchmark_maf}.annovar_output.hg19_multianno.txt')), benchmark_maf=mybenchmarks_maf),
@@ -457,13 +458,15 @@ rule prepFathmmInputMaf:
         user=config['mysql_user'],
         passwd=config['mysql_passwd']
     output:
-        join(benchmark_dir, 'methods/input/{benchmark_maf,msk_impact|mc3|patrick_et_al}.fathmm_input.txt')
+        fathmm_input=join(benchmark_dir, 'methods/input/{benchmark_maf,msk_impact|mc3|patrick_et_al}.fathmm_input.txt'),
+        fathmm_uid=join(benchmark_dir, 'methods/input/{benchmark_maf,msk_impact|mc3|patrick_et_al}.fathmm_uids.txt')
     shell:
         "python scripts/benchmark/snvbox2fathmm.py "
         "   -i {input} "
         "   --from-features "
         "   --mysql-user {params.user} --mysql-passwd {params.passwd} "
-        "   -o {output}"
+        "   -ou {output.fathmm_uid} "
+        "   -o {output.fathmm_input}"
 
 #####################
 # transfic

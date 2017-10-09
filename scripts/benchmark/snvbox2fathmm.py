@@ -34,6 +34,9 @@ def parse_arguments():
     parser.add_argument('--mysql-passwd',
                         type=str, required=True,
                         help='MySQL password')
+    parser.add_argument('-ou', '--output-uid',
+                        type=argparse.FileType('w'), required=True,
+                        help='FATHMM uids for mutations')
     parser.add_argument('-o', '--output',
                         type=argparse.FileType('w'), required=True,
                         help='FATHMM input format')
@@ -63,6 +66,7 @@ def main(opts):
 
     # iterate through each row
     output_list = []
+    output_uids = [['UID']]
     for ix, row in df.iterrows():
         # figure out which column to use in mysql table
         if row['transcript'].startswith('ENST'):
@@ -79,11 +83,18 @@ def main(opts):
         uniprot_id = tmp_result[-2]
 
         output_list.append([uniprot_id, row['mutation']])
+        output_uids.append([row['UID']])
 
     # save output
     with opts['output'] as handle:
         mywriter = csv.writer(handle, delimiter=' ', lineterminator='\n')
         mywriter.writerows(output_list)
+
+    # save UID
+    with opts['output_uid'] as handle:
+        mywriter = csv.writer(handle, delimiter='\t', lineterminator='\n')
+        mywriter.writerows(output_uids)
+
     db.close()
 
 
