@@ -1,28 +1,49 @@
 from os.path import join
+import os
+
+# function to check input from config dictionary
+def check_and_return(mydict, key, default=None, is_path=False, prepend_prefix=None):
+    """Fetch input from configuration with error checking."""
+    # return error if required option not found
+    if default is None and key not in mydict:
+        sys.exit('{0} option not found in provided configuration'.format(key))
+        
+    # get value of config
+    value = mydict.get(key, default)
+    if prepend_prefix:
+        value = join(prepend_prefix, value)
+
+    # check if path exists, if it is a file/directory path
+    if is_path and not os.path.exists(value):
+        sys.exit('{0} option references a path that does not exist: {1}'.format(key, value))
+
+    # else return
+    return value
 
 # configuration file 
 configfile: "chasm2/data/config.yaml"
-configfile: join(config['twentyTwentyPlus'], 'config.yaml')
-config['data_dir'] = join(config['twentyTwentyPlus'], config['data_dir'])
+twentyTwentyPlus_dir = check_and_return(config, 'twentyTwentyPlus', is_path=True)
+configfile: join(twentyTwentyPlus_dir, 'config.yaml')
+config['data_dir'] = join(twentyTwentyPlus_dir, config['data_dir'])
 
 # include 20/20+ snakefile
-include: join(config['twentyTwentyPlus'], 'Snakefile')
+include: join(twentyTwentyPlus_dir, 'Snakefile')
 
 # parameters from command line
-output_dir=config['output_dir']
-mutsigcv_dir=config['mutsigcv_dir']
+output_dir=check_and_return(config, 'output_dir', default='chasm2_output')
+mutsigcv_dir=check_and_return(config, 'mutsigcv_dir', default='')
 #mutations_hg38=config['mutations_hg38']
-mutations=config['mutations']
-trained_chasm2=config['trained_model']
+mutations=check_and_return(config, 'mutations', default='')
+trained_chasm2=check_and_return(config, 'trained_model', default='')
 
 # data files
 #output_dir=config["output_dir"]
 snvGet="/mnt/disk003/projects/CVS-dev/SNVBox/snvGetGenomic"
-data_dir=config['chasm2_data']
-bed=join(data_dir, config["bed"])
-fasta=join(data_dir, config["fasta"])
-featureList=join(data_dir, config["feature_list"])
-liftoverChain=join(data_dir, config['liftoverChain'])
+data_dir=check_and_return(config, 'chasm2_data', is_path=True)
+bed=check_and_return(config, "bed", is_path=True, prepend_prefix=data_dir)
+fasta=check_and_return(config, "fasta", is_path=True, prepend_prefix=data_dir)
+featureList=check_and_return(config, "feature_list", is_path=True, prepend_prefix=data_dir)
+liftoverChain=check_and_return(config, 'liftoverChain', is_path=True, prepend_prefix=data_dir)
 
 # parameters
 hotmaps1d_windows=[0, 5, 10]
