@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-CHASM2: Ratiometric prediction of cancer driver genes
-======================================================
+CHASM2: predicting driver somatic missense mutations in human cancers
+=====================================================================
 
 :Author: Collin Tokheim
 :Contact: ctokheim # jhu DOT edu
