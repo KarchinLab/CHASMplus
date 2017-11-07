@@ -1,0 +1,7 @@
+numpy
+scipy
+pandas>=0.17.0
+scikit-learn
+rpy2
+probabilistic2020
+snakemake
