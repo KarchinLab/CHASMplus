@@ -26,4 +26,4 @@ install:
   - conda env create -f environment.yml
   - source activate CHASM2
   - R --version
-script: "python chasm2/console/chasm.py --help"
+script: "nosetests tests/"
