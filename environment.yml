@@ -1,0 +1,23 @@
+name: CHASM2
+channels:
+- bioconda
+- conda-forge
+- defaults
+- r
+dependencies:
+- r=3.3.2=r3.3.2_0
+- r-essentials=1.5.2=r3.3.2_0
+- r-randomforest=4.6_12=r3.3.2_0
+- pysam=0.11.2.2=py36_1
+- rpy2=2.7.8=py36r3.3.2_1
+- snakemake=4.0.0=py36_1
+- matplotlib=2.0.2=np113py36_0
+- numpy=1.13.0=py36_blas_openblas_200
+- scipy=0.19.1=np113py36_blas_openblas_200
+- pandas=0.20.2=np113py36_1
+- pip=9.0.1=py36_0
+- python=3.6.1=3
+- scikit-learn=0.18.2=np113py36_blas_openblas_200
+- setuptools=33.1.1=py36_0
+- pip:
+  - probabilistic2020==1.2.0
