@@ -19,7 +19,7 @@ $ conda env create -f environment.yml
 $ source activate CHASM2
 ```
 
-You will need to activate the CHASM2 environment each time you want to run CHASM2.
+Make sure the CHASM2 environment is activated when you want to run CHASM2.
 
 ### pip
 
