@@ -1,5 +1,7 @@
 # location of 20/20+ snakefile
 twentyTwentyPlus: /projects/driver_genes/2020+/
+# location of snvGetGenomic script
+snvGetGenomic: /mnt/disk003/projects/CVS-dev/SNVBox/snvGetGenomic
 # location of data files
 chasm2_data: chasm2/data
 oncogene: oncogenes.txt

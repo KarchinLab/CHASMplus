@@ -38,7 +38,7 @@ trained_chasm2=check_and_return(config, 'trained_model', default='')
 
 # data files
 #output_dir=config["output_dir"]
-snvGet="/mnt/disk003/projects/CVS-dev/SNVBox/snvGetGenomic"
+snvGet=check_and_return(config, 'snvGetGenomic', is_path=True)
 data_dir=check_and_return(config, 'chasm2_data', is_path=True)
 bed=check_and_return(config, "bed", is_path=True, prepend_prefix=data_dir)
 fasta=check_and_return(config, "fasta", is_path=True, prepend_prefix=data_dir)
