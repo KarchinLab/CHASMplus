@@ -8,6 +8,7 @@ dependencies:
 - r
 - r-essentials
 - r-randomforest
+- r-getopt
 - python
 - setuptools
 - pip
