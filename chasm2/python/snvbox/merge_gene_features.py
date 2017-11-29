@@ -69,6 +69,11 @@ def main(opts):
     merged_df['replication_time'] = merged_df['replication_time'].fillna(merged_df['replication_time'].mean())
     merged_df['HiC_compartment'] = merged_df['HiC_compartment'].fillna(merged_df['HiC_compartment'].mean())
     merged_df['gene length'] = merged_df['gene length'].fillna(merged_df['gene length'].mean())
+    # fill with reference mean if no match at all
+    if merged_df['replication_time'].isnull().sum():
+        merged_df['replication_time'] = lawrence_df['replication_time'].mean()
+    if merged_df['HiC_compartment'].isnull().sum():
+        merged_df['HiC_compartment'] = lawrence_df['HiC_compartment'].mean()
 
     # add back class column as last column
     merged_df['class'] = class_col
