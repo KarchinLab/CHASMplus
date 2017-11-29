@@ -20,6 +20,7 @@ if ("getopt" %in% rownames(installed.packages())){
     opt <- list(ARGS=NULL)
   }
 } else {
+  print("Getopt library is not installed")
   opt <- list(ARGS=NULL)
 }
 
