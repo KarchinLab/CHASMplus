@@ -85,12 +85,18 @@ def main(opts):
     # filter data frame
     cols = ['ID', 'Chromosome', 'Start_Position', #'End_Position',
             'mystrand', 'Reference_Allele', 'Tumor_Seq_Allele2'] #, 'oncogenic']
+    cols2 = ['ID', 'Hugo_Symbol']
     is_single = (df['Reference_Allele'].str.len()==1) & (df['Tumor_Seq_Allele2'].str.len()==1)
     is_not_indel = (df['Reference_Allele']!='-') & (df['Tumor_Seq_Allele2']!='-')
     df = df[is_single & is_not_indel]
     df = df[df['Variant_Classification']=='Missense_Mutation']
-    #df = df.drop_duplicates(['Transcript_ID', 'HGVSp_Short'])
-    #df = df[~is_not_indel]
+
+    # save empty files if there are no mutations
+    if df.empty:
+        df.to_csv(opts['output_driver'], sep='\t', index=False, header=False)
+        df.to_csv(opts['output_passenger'], sep='\t', index=False, header=False)
+        df.to_csv(opts['gene_file'], sep='\t', index=False, header=False)
+        return
 
     # save snvbox input
     # filter to keep only mutations that are in genes
@@ -120,7 +126,6 @@ def main(opts):
     non_driver_df[cols].to_csv(opts['output_passenger'], sep='\t', index=False, header=False)
 
     # save gene file
-    cols2 = ['ID', 'Hugo_Symbol']
     df[cols2].to_csv(opts['gene_file'], sep='\t', index=False, header=False)
 
 
