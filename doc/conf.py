@@ -42,8 +42,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'CHASM2'
-copyright = u'2013-17, Collin Tokheim'
+project = u'CHASMplus'
+copyright = u'2017-18, Collin Tokheim'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -185,7 +185,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'chasm2.tex', u'CHASM2 Documentation',
+  ('index', 'chasm2.tex', u'CHASMplus Documentation',
    u'Collin Tokheim', 'manual'),
 ]
 
@@ -215,7 +215,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'CHASM2', u'CHASM2 Documentation',
+    ('index', 'CHASMplus', u'CHASMplus Documentation',
      [u'Collin Tokheim'], 1)
 ]
 
@@ -229,8 +229,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'CHASM2', u'CHASM2 Documentation',
-   u'Collin Tokheim', 'CHASM2', 'Predict missense mutation drivers in human cancers.',
+  ('index', 'CHASMplus', u'CHASMplus Documentation',
+   u'Collin Tokheim', 'CHASMplus', 'Predict missense mutation drivers in human cancers.',
    'Miscellaneous'),
 ]
 
