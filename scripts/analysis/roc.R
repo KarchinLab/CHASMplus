@@ -31,7 +31,7 @@ read_cgc <- function(path){
 
   # keep only somatic missense genes
   cgc_genes <- cgc_df  %>%
-    filter(!grepl('Mis', Mutation.Types) & Tumour.Types.Somatic.!='') %>%
+    filter(grepl('Mis', Mutation.Types) & Tumour.Types.Somatic.!='' & !is.na(Tumour.Types.Somatic.)) %>%
     select(Gene.Symbol) %>%
     distinct %>%
     as.vector
@@ -86,9 +86,7 @@ if (poslabel=='iarc_tp53') {
   # merge in chasm2 scores
   chasm2_df <- read.delim(opt$chasm2, stringsAsFactors=F)
   chasm2_df <- chasm2_df %>%
-                select(UID, CHASM2, CHASM2_genome, 
-                       CHASM2_pval, CHASM2_genome_pval,
-                       CHASM2_qval, CHASM2_genome_qval)
+                select(UID, CHASM2, CHASM2_genome)
   benchmark_df <- benchmark_df %>% 
                     left_join(chasm2_df, by=c('UID'))
 
@@ -109,9 +107,9 @@ if (poslabel=='iarc_tp53') {
 print('Calculating AUC . . .')
 pred_methods <- c('VEST', 'CADD',  'FATHMM', 
                   '1-SIFT', 'MutationAssessor', 'REVEL', 'MCAP',
-                  'ParsSNP', '1-CHASM',  
+                  'ParsSNP', '1-CHASM',  'TransFIC',
                   'Polyphen2_hdiv', 'Polyphen2_hvar', 
-                  'CanDrA', 'CanDrA.plus',
+                  'CanDrA', 'CanDrA.plus', 
                   'CHASM2', 'CHASM2_genome')
 # calculate the AUC's
 aucs <- c()
@@ -121,6 +119,7 @@ for (m in pred_methods) {
   aucs <- c(aucs, tmp_auc)
 }
 result_df <- data.frame(method=pred_methods, auc=aucs)
+print(result_df)
 print('Finished calculating AUC.')
 
 # figure out which is the best auc within different variants of the same method
