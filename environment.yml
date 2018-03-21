@@ -1,4 +1,4 @@
-name: CHASM2
+name: CHASMplus
 channels:
 - bioconda
 - conda-forge
