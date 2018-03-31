@@ -4,6 +4,8 @@ Installation
 .. image:: https://travis-ci.org/KarchinLab/CHASMplus.svg?branch=master
     :target: https://travis-ci.org/KarchinLab/CHASMplus
 
+CHASMplus is only intended to be ran on linux operating systems and on a compute server.
+
 Releases
 ~~~~~~~~
 
