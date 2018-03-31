@@ -41,7 +41,10 @@ To install these packages via `pip` you can use the following command:
 $ pip install -r requirements.txt
 ```
 
+## Platform
+
+CHASMplus is only intended to run on *linux* operating systems and on a compute server.
+
 ## Issues
 
-* snvGetGenomic does not work in python 3, which is what most of my code is intended to run on
-* 20/20+ only works in hg19, but CHASMplus is in hg38
+* snvGetGenomic does not work in python 3 so you will also need to have python2.7 installed (check `which python2.7`). This will be alleviated in a later release.
