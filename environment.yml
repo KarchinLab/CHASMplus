@@ -1,7 +1,6 @@
 name: CHASMplus
 channels:
 - bioconda
-- conda-forge
 - defaults
 - r
 dependencies:
