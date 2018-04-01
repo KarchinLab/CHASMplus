@@ -24,6 +24,6 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
   - conda env create -f environment.yml
-  - source activate CHASM2
+  - source activate CHASMplus
   - R --version
 script: "nosetests tests/"
