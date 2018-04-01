@@ -34,6 +34,7 @@ CHASMplus also requires the following python packages:
 * rpy2
 * probabilistic2020
 * snakemake
+* pyyaml
 
 To install these packages via `pip` you can use the following command:
 
