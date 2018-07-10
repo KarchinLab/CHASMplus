@@ -1,5 +1,5 @@
-Installation
-------------
+Installation (source)
+---------------------
 
 .. image:: https://travis-ci.org/KarchinLab/CHASMplus.svg?branch=master
     :target: https://travis-ci.org/KarchinLab/CHASMplus
