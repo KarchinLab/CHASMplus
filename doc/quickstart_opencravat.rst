@@ -60,3 +60,8 @@ The above command will run the chasmplus annotator (specified by the -a flag) an
     1	0.399	0.048	ENST00000453444.6	ENST00000334433.7:(0.025:0.59),ENST00000358010.5:(0.049:0.393),*ENST00000453444.6:(0.048:0.399),NM_001291876.1:(0.046:0.412),NM_001291877.1:(0.045:0.418),NM_206861.2:(0.048:0.399),NM_206862.3:(0.025:0.59)
     2	0.99	0.001	NM_052959.2	*NM_052959.2:(0.001:0.99)
     3	0.446	0.041	NM_001080547.1	ENST00000533968.1:(0.053:0.369),*NM_001080547.1:(0.041:0.446),NM_003120.2:(0.049:0.393)
+
+Genome builds
+=============
+
+By default, OpenCRAVAT processes variants on hg38. If you are using hg19 or hg18, please specify with the "-l" parameter your specific reference genome so that OpenCRAVAT will know to lift over your variants.
