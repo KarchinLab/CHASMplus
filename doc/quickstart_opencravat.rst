@@ -34,9 +34,7 @@ OpenCRAVAT takes as input either a VCF file or a simple tab-delimited text file.
 
 You can download an example input file `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/doc/input.txt>`_.
 
-.. note::
-
-   By default, OpenCRAVAT processes variants on the hg38 reference genome. If you are using hg19 or hg18, please specify with the "-l" parameter your specific reference genome so that OpenCRAVAT will know to lift over your variants.
+.. note:: By default, OpenCRAVAT processes variants on the hg38 reference genome. If you are using hg19 or hg18, please specify with the "-l" parameter your specific reference genome so that OpenCRAVAT will know to lift over your variants.
    
 You can run CHASMplus by using the `cravat` command. For information about command line options, please see the command line help:
 
