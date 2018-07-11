@@ -66,4 +66,4 @@ The above command will run the chasmplus annotator (specified by the -a flag) an
 Interpretation
 ++++++++++++++
 
-CHASMplus scores range from 0 to 1, with higher scores meaning more likely to be a cancer driver mutaiton. If you are looking to identify a discrete set of putative driver mutations, then we suggest that you correct for multiple hypothesis testing. We recommend using the Benjamini-Hochberg (BH) procedure for controling the false discovery rate. You will need to use an external package to do this, e.g., the `p.adjust` function in R. False discovery rate adjustments will likely be added in the future.
+CHASMplus scores range from 0 to 1, with higher scores meaning more likely to be a cancer driver mutation. If you are looking to identify a discrete set of putative driver mutations, then we suggest that you correct for multiple hypothesis testing. We recommend using the Benjamini-Hochberg (BH) procedure for controling the false discovery rate. You will need to use an external package to do this, e.g., the `p.adjust` function in R. False discovery rate adjustments will likely be added in the future.
