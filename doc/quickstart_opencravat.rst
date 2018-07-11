@@ -8,7 +8,7 @@ Install OpenCRAVAT
 
 You will first need to install the OpenCRAVAT python package, please follow the instructions on the OpenCRAVAT wiki: 
 
-`1. Installation Instructions <https://github.com/KarchinLab/open-cravat/wiki/1.-Installation-Instructions>`_
+`Installation Instructions <https://github.com/KarchinLab/open-cravat/wiki/1.-Installation-Instructions>`_
 
 Install chasmplus annotator
 +++++++++++++++++++++++++++
