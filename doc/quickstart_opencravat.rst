@@ -34,6 +34,10 @@ OpenCRAVAT takes as input either a VCF file or a simple tab-delimited text file.
 
 You can download an example input file `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/doc/input.txt>`_.
 
+.. note::
+
+   By default, OpenCRAVAT processes variants on the hg38 reference genome. If you are using hg19 or hg18, please specify with the "-l" parameter your specific reference genome so that OpenCRAVAT will know to lift over your variants.
+   
 You can run CHASMplus by using the `cravat` command. For information about command line options, please see the command line help:
 
 .. code-block:: bash
@@ -61,7 +65,7 @@ The above command will run the chasmplus annotator (specified by the -a flag) an
     2	0.99	0.001	NM_052959.2	*NM_052959.2:(0.001:0.99)
     3	0.446	0.041	NM_001080547.1	ENST00000533968.1:(0.053:0.369),*NM_001080547.1:(0.041:0.446),NM_003120.2:(0.049:0.393)
 
-Genome builds
-=============
+Interpretation
+++++++++++++++
 
-By default, OpenCRAVAT processes variants on hg38. If you are using hg19 or hg18, please specify with the "-l" parameter your specific reference genome so that OpenCRAVAT will know to lift over your variants.
+CHASMplus scores range from 0 to 1, with higher scores meaning more likely to be a cancer driver mutaiton. If you are looking to identify a discrete set of putative driver mutations, then we suggest that you correct for multiple hypothesis testing. We recommend using the Benjamini-Hochberg (BH) procedure for controling the false discovery rate. You will need to use an external package to do this, e.g., the `p.adjust` function in R. False discovery rate adjustments will likely be added in the future.
