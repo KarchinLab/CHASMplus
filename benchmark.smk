@@ -10,12 +10,12 @@ benchmark_dir=config['benchmark_dir']
 trained_chasm2=config['trained_model']
 
 # snvget 
-prot_to_gen="/mnt/disk003/projects/CVS-dev/SNVBox/proteinToGenomic.py"
-snvgetgenomic="/mnt/disk003/projects/CVS-dev/SNVBox/snvGetGenomic"
-snvgettranscript="/mnt/disk003/projects/CVS-dev/SNVBox/snvGetTranscript"
+prot_to_gen="/mnt/disk005/data/projects/CVS-dev/SNVBox/proteinToGenomic.py"
+snvgetgenomic="/mnt/disk005/data/projects/CVS-dev/SNVBox/snvGetGenomic"
+snvgettranscript="/mnt/disk005/data/projects/CVS-dev/SNVBox/snvGetTranscript"
 
 # original chasm
-orig_chasm_dir="/mnt/disk003/projects/CVS-dev/CHASM/"
+orig_chasm_dir="/mnt/disk005/data/projects/CVS-dev/CHASM/"
 
 # other methods
 candra_plus="methods/CanDrA.v+/open_candra.pl"
