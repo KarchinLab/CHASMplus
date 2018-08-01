@@ -25,5 +25,6 @@ install:
   - conda info -a
   - conda env create -f environment.yml
   - source activate CHASMplus
+  - conda install nose
   - R --version
 script: "nosetests tests/"
