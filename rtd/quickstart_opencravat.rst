@@ -32,7 +32,7 @@ OpenCRAVAT takes as input either a VCF file or a simple tab-delimited text file.
     var4	chr11	90135669	+	C	T
     var5	chr12	106978077	+	A	G
 
-You can download an example input file `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/doc/input.txt>`_.
+You can download an example input file `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt>`_.
 
 .. note:: By default, OpenCRAVAT processes variants on the hg38 reference genome. If you are using hg19 or hg18, please specify with the "-l" parameter your specific reference genome so that OpenCRAVAT will know to lift over your variants.
    
@@ -42,13 +42,13 @@ You can run CHASMplus by using the `cravat` command. For information about comma
 
    $ cravat -h
 
-I recommend using the "--sm --ea" options when running CHASMplus, so that large input files will finish much more quickly. To obtain CHASMplus scores for the example input file, run the following command:
+To obtain CHASMplus scores for pan-cancer (annotator "chasmplus") and lung adenocarcinoma (annotator "chasmplus_LUAD"), run the following command:
 
 .. code-block:: bash
 
-   $ cravat --sm --ea -a chasmplus -d output_directory input.txt
+   $ cravat -n MYRUN -t excel -a chasmplus chasmplus_LUAD -d output_directory input.txt
 
-The above command will run the chasmplus annotator (specified by the -a flag) and save results to the directory named "output_directory". Scores and p-values from CHASMplus are found in the "input.txt.chasmplus.var" file. You will also need the "input.txt.crm" file to merge the user provided variant IDs into the CHASMplus results. The .var file should look like this::
+The above command will run all annotators (specified by the -a flag, multiple separated by a space) and save results to the directory named "output_directory". The "-t" option specifies the output to be saved as an excel file. The -n flag specifies the name of the run. Scores and p-values from CHASMplus are found in the "MYRUN.xlsx" file (or "MYRUN.tsv" if -t text is chosen). You should see an excel sheet that looks like this::
 
     #name=chasmplus
     #displayname=CHASMplus
@@ -67,3 +67,8 @@ Interpretation
 ++++++++++++++
 
 CHASMplus scores range from 0 to 1, with higher scores meaning more likely to be a cancer driver mutation. If you are looking to identify a discrete set of putative driver mutations, then we suggest that you correct for multiple hypothesis testing. We recommend using the Benjamini-Hochberg (BH) procedure for controling the false discovery rate. You will need to use an external package to do this, e.g., the `p.adjust` function in R. False discovery rate adjustments will likely be added in the future.
+
+Further documentation
++++++++++++++++++++++
+
+For further advanced features of OpenCRAVAT, please see the `OpenCRAVAT wiki <https://github.com/KarchinLab/open-cravat/wiki>`_.
