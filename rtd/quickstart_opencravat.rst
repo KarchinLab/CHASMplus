@@ -19,7 +19,13 @@ OpenCRAVAT has a modular architecture to perform genomic variant interpretation 
 
    $ cravat-admin install chasmplus
 
-The above command may take a couple minutes.
+The above command may take a couple minutes and will install the pan-cancer model of CHASMplus scores. To install cancer type specific versions of CHASMplus, follow the following template:
+
+.. code-block:: bash
+
+   $ cravat-admin install chasmplus_LUAD
+
+where LUAD, the abbrevitation from the The Cancer Genome Atlas, designates lung adenocarcinoma.
 
 Running CHASMplus
 +++++++++++++++++
