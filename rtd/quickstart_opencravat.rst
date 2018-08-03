@@ -10,8 +10,8 @@ You will first need to install the OpenCRAVAT python package, please follow the 
 
 `Installation Instructions <https://github.com/KarchinLab/open-cravat/wiki/1.-Installation-Instructions>`_
 
-Install chasmplus annotator
-+++++++++++++++++++++++++++
+Install CHASMplus annotators
+++++++++++++++++++++++++++++
 
 OpenCRAVAT has a modular architecture to perform genomic variant interpretation including variant impact, annotation, and scoring. CHASMplus is one module available in the CRAVAT store. To install the CHASMplus module within OpenCRAVAT, please execute the following command:
 
@@ -25,7 +25,11 @@ The above command may take a couple minutes and will install the pan-cancer mode
 
    $ cravat-admin install chasmplus_LUAD
 
-where LUAD, the abbrevitation from the The Cancer Genome Atlas, designates lung adenocarcinoma.
+where LUAD, the abbrevitation from the The Cancer Genome Atlas, designates lung adenocarcinoma. To see a full list of available annotators, issue the following commnad:
+
+.. code-block:: bash
+
+   $ cravat-admin ls -a
 
 Running CHASMplus
 +++++++++++++++++
