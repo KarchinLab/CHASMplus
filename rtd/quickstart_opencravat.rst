@@ -56,6 +56,8 @@ The above command will run all annotators (specified by the -a flag, multiple se
     0.99    0.001   NM_052959.2 *NM_052959.2:(0.001:0.99)   0.945   0.002   NM_052959.2 *NM_052959.2:(0.002:0.945)
     0.446   0.041   NM_001080547.1  ENST00000533968.1:(0.053:0.369),*NM_001080547.1:(0.041:0.446),NM_003120.2:(0.049:0.393) 0.278   0.044   NM_001080547.1  ENST00000533968.1:(0.043:0.284),*NM_001080547.1:(0.044:0.278),NM_003120.2:(0.053:0.224) 
 
+CHASMplus scores are provided in a transcript specific manner, with the score for the default selected transcript shown in the "Score", "P-value", and "Transcript" columns. Scores for other transcripts are listed in the "All results" column.
+
 Interpretation
 ++++++++++++++
 
