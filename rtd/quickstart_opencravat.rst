@@ -48,20 +48,13 @@ To obtain CHASMplus scores for pan-cancer (annotator "chasmplus") and lung adeno
 
    $ cravat -n MYRUN -t excel -a chasmplus chasmplus_LUAD -d output_directory input.txt
 
-The above command will run all annotators (specified by the -a flag, multiple separated by a space) and save results to the directory named "output_directory". The "-t" option specifies the output to be saved as an excel file. The -n flag specifies the name of the run. Scores and p-values from CHASMplus are found in the "MYRUN.xlsx" file (or "MYRUN.tsv" if -t text is chosen). You should see an excel sheet that looks like this::
+The above command will run all annotators (specified by the -a flag, multiple separated by a space) and save results to the directory named "output_directory". The "-t" option specifies the output to be saved as an excel file. The -n flag specifies the name of the run. Scores and p-values from CHASMplus are found in the "MYRUN.xlsx" file (or "MYRUN.tsv" if -t text is chosen). You should see the "Variant" excel sheet that contains columns like this::
 
-    #name=chasmplus
-    #displayname=CHASMplus
-    #column=0,UID,uid,int
-    #column=1,P-value,pval,float
-    #column=2,Score,score,float
-    #column=3,Transcript,transcript,string
-    #column=4,All results,results,string
-    #no_aggregate=
-    #UID	P-value	Score	Transcript	All results
-    1	0.399	0.048	ENST00000453444.6	ENST00000334433.7:(0.025:0.59),ENST00000358010.5:(0.049:0.393),*ENST00000453444.6:(0.048:0.399),NM_001291876.1:(0.046:0.412),NM_001291877.1:(0.045:0.418),NM_206861.2:(0.048:0.399),NM_206862.3:(0.025:0.59)
-    2	0.99	0.001	NM_052959.2	*NM_052959.2:(0.001:0.99)
-    3	0.446	0.041	NM_001080547.1	ENST00000533968.1:(0.053:0.369),*NM_001080547.1:(0.041:0.446),NM_003120.2:(0.049:0.393)
+    CHASMplus                               CHASMplus_LUAD          
+    P-value Score   Transcript  All results P-value Score   Transcript  All results
+    0.399   0.048   ENST00000453444.6   ENST00000334433.7:(0.025:0.59),ENST00000358010.5:(0.049:0.393),*ENST00000453444.6:(0.048:0.399),NM_001291876.1:(0.046:0.412),NM_001291877.1:(0.045:0.418),NM_206861.2:(0.048:0.399),NM_206862.3:(0.025:0.59)    0.644   0.013   ENST00000334433.7   *ENST00000334433.7:(0.013:0.644),ENST00000358010.5:(0.023:0.478),ENST00000453444.6:(0.022:0.492),NM_001291876.1:(0.022:0.492),NM_001291877.1:(0.022:0.492),NM_206861.2:(0.023:0.478),NM_206862.3:(0.013:0.644)
+    0.99    0.001   NM_052959.2 *NM_052959.2:(0.001:0.99)   0.945   0.002   NM_052959.2 *NM_052959.2:(0.002:0.945)
+    0.446   0.041   NM_001080547.1  ENST00000533968.1:(0.053:0.369),*NM_001080547.1:(0.041:0.446),NM_003120.2:(0.049:0.393) 0.278   0.044   NM_001080547.1  ENST00000533968.1:(0.043:0.284),*NM_001080547.1:(0.044:0.278),NM_003120.2:(0.053:0.224) 
 
 Interpretation
 ++++++++++++++
