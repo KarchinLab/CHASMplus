@@ -1,15 +1,15 @@
 - name: GitHub
-  url: http://github.com/
+  url: https://github.com/KarchinLab/CHASMplus
   class: icon-github
   title: ""
 
-- name: YouTube
-  url: http://www.youtube.com/
-  class: icon-youtube
-  title: ""
+#- name: YouTube
+  #url: http://www.youtube.com/
+  #class: icon-youtube
+  #title: ""
 
 - name: Twitter
-  url: http://twitter.com/
+  url: https://twitter.com/cravatmupittool
   class: icon-twitter
   title: ""
 

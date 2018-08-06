@@ -1,7 +1,7 @@
 #
 #   Navigation to the left › side: left
 #
-- title: Start
+- title: Home
   url: "/"
   side: left
 
@@ -28,10 +28,6 @@
 #
 - title: "Info"
   url: "/info/"
-  side: right
-
-- title: "Search"
-  url: "/search/"
   side: right
 
 - title: "Contact"
