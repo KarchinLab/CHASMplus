@@ -19,6 +19,7 @@ Contents:
    :maxdepth: 3
 
    quickstart_opencravat
+   models
    download
    installation
    faq
