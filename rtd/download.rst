@@ -1,7 +1,7 @@
 .. _download-ref:
 
-Download
-========
+Advanced: download (source)
+===========================
 
 CHASMplus releases
 ------------------
