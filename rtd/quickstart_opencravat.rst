@@ -1,3 +1,5 @@
+.. _quickstart-ref:
+
 Quick start (OpenCRAVAT & CHASMplus)
 ------------------------------------
 

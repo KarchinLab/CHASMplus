@@ -22,6 +22,7 @@ Contents:
    models
    download
    installation
+   tutorial
    faq
 
 Releases
