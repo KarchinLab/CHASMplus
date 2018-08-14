@@ -15,7 +15,7 @@ ctokheim AT jhu dot edu.
 
 The p-values reported from CHASMplus are based on whole-exome
 sequencing studies. If your mutations comes from a targeted gene panel, CHASMplus
-cannot capture ahead of time what are the specific genes assessed. To get an accurate
+cannot capture ahead of time what are the specific genes being assessed. To get an accurate
 estimate of statistical significance, you will need to use the source code version
 of CHASMplus to perform a customized analysis. Documentation on how to do this will be added in the future.
 
