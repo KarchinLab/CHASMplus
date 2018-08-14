@@ -5,5 +5,5 @@ CHASMplus can perform predictions either using a cancer type-specific model or i
 
 .. csv-table:: 
    :file: available_chasmplus_models.csv
-   :header: "Annotator name", "Source", "Cancer type"
+   :header: "Annotator name", "Data source", "Cancer type"
    :widths: 15, 10, 50
