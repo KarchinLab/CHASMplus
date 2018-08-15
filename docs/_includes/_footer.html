@@ -6,6 +6,7 @@
 
 
     <footer id="footer-content" class="bg-grau">
+      <!--
       <div id="footer">
         <div class="row">
           <div class="medium-6 large-5 columns">
@@ -55,15 +56,16 @@
         </div><!-- /.row -->
 
       </div><!-- /#footer -->
-
+      -->
 
       <div id="subfooter">
         <nav class="row">
           <section id="subfooter-left" class="b30 small-12 medium-6 columns credits">
-            <p>
-              Leave some &hearts;
-              for&nbsp;
-              <a href="http://phlow.de" alt="Theme created by Phlow">Phlow</a>
+            <h5 class="shadow-black">{{ site.data.language.info_website }}</h5>
+
+            <p class="shadow-black">
+              {{ site.description }}
+              <a href="{{ site.url }}{{ site.baseurl }}/info/">{{ site.data.language.more }}</a>
             </p>
           </section>
 
