@@ -19,7 +19,7 @@ layout: frontpage
 #
 permalink: /index.html
 ---
-<div style="align-text:center"><h1>Explore driver mutations</h1></div>
+<div style="text-align:center"><h1>Explore driver mutations</h1></div>
 
 <div id="header-home">
     <div class="row">
