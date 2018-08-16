@@ -6,7 +6,7 @@
 #
 layout: frontpage
 header:
-  image: chasmplus.png
+  image_fullwidth: chasmplus.png
 #
 # Use the call for action to show a button on the frontpage
 #
