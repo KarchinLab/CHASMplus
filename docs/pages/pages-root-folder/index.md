@@ -19,6 +19,12 @@ layout: frontpage
 #
 permalink: /index.html
 ---
+<div id="header-home">
+    <div class="row">
+        <div class="small-12 columns">
+        </div><!-- /.medium-4.columns -->
+    </div><!-- /.row -->
+</div><!-- /#header-home -->
 
 <p><strong>CRAVAT visualizations</strong></p>
 <ul class="side-nav">
