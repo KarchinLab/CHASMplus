@@ -20,6 +20,7 @@ layout: frontpage
 permalink: /index.html
 ---
 
+<p><strong>CRAVAT visualizations</strong></p>
 <ul class="side-nav">
 <li><a href="http://www.cravat.us/CRAVAT/job_detail.html?job_id=collintokheim_20180815_205745">ACC: Adrenocortical carcinoma</a></li>
 <li><a href="http://www.cravat.us/CRAVAT/job_detail.html?job_id=collintokheim_20180815_205936">BLCA: Bladder Urothelial Carcinoma</a></li>
