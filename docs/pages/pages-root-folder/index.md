@@ -5,8 +5,8 @@
 # this work, you have to use › layout: frontpage
 #
 layout: frontpage
-#header:
-#  image_fullwidth: you-can-delete-me-header.png
+header:
+  image_fullwidth: cravat.jpeg
 #
 # Use the call for action to show a button on the frontpage
 #
@@ -22,6 +22,7 @@ permalink: /index.html
 <div id="header-home">
     <div class="row">
         <div class="small-12 columns">
+            <img width="930" src="https://karchinlab.github.io/CHASMplus/images/cravat.jpeg">
         </div><!-- /.medium-4.columns -->
     </div><!-- /.row -->
 </div><!-- /#header-home -->
