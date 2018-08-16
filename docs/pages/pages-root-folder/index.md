@@ -5,8 +5,8 @@
 # this work, you have to use › layout: frontpage
 #
 layout: frontpage
-#header:
-#  image_fullwidth: cravat.jpeg
+header:
+  image: chasmplus.png
 #
 # Use the call for action to show a button on the frontpage
 #
