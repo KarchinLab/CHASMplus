@@ -33,4 +33,6 @@ Releases
 Citation
 --------
 
-Manuscript is currently submitted. We will update the citation when the paper is published.
+The manuscript is currently submitted. Please cite the biorXiv paper for now:
+
+Tokheim, C., & Karchin, R. (2018). Enhanced context reveals the scope of somatic missense mutations driving human cancers. bioRxiv, 313296. 
