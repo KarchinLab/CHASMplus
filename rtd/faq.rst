@@ -26,3 +26,7 @@ You can obtain the set of mutations used for training from `here <http://karchin
 **I want to compare my method to CHASMplus. How should I do it?**
 
 I recommend using the precomputed scores available through OpenCRAVAT [see :ref:`quickstart-ref`]. Scores in the precompute were generatured using gene-hold out cross-validation, so there is no issue when evaluating performance about training set overlap leading to overfitting. However, the scores do reflect training based on data from The Cancer Genome Atlas (TCGA). If a new method is trained using more data than is available from the TCGA, then it is recommended to create a new CHASMplus model based on the larger data set by using the CHASMplus source code.
+
+**I want to apply CHASMplus to new data. How should I do it?**
+
+For small datasets it is recommended that pre-computed scores obtained from OpenCRAVAT are used. Large datasets may also use the pre-computed scores, but won't benefit from predictions that are customized to your data. If a cancer type you are interested in does not have precomputed scores or you have collected a large number of cancer samples, than it is recommended to use the CHASMplus source code to perform tailored predictions for your data.
