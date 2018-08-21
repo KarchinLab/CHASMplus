@@ -39,10 +39,10 @@ Running CHASMplus
 OpenCRAVAT takes as input either a VCF file or a simple tab-delimited text file. I will describe a simple example that uses the latter. The simple tab-delimited text file should contain a variant ID, chromosome (with "chr"), start position (1-based), strand, reference allele, alternate allele, and optional sample ID.::
 
     chr10	122050517	+	C	T	sample1	var1
-    chr11	124619643	+	G	A	sample1	var1
-    chr11	47358961	+	G	T	sample1	var1
-    chr11	90135669	+	C	T	sample1	var1
-    chr12	106978077	+	A	G	sample1	var1
+    chr11	124619643	+	G	A	sample1	var2
+    chr11	47358961	+	G	T	sample1	var3
+    chr11	90135669	+	C	T	sample1	var4
+    chr12	106978077	+	A	G	sample1	var5
 
 You can download an example input file `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt>`_.
 
