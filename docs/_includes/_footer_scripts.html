@@ -53,3 +53,59 @@ s0.parentNode.insertBefore(s1,s0);
 </script>
 {% endif %}
 
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+<!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>-->
+<script src="/assets/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="http://oss.sheetjs.com/js-xlsx/xlsx.full.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
+<script type="text/javascript">
+
+  $("#example-table").tabulator({
+      height:700, // set height of table to enable virtual DOM
+      //data:tabledata, //load initial data into table
+      layout:"fitColumns", //fit columns to width of table (optional)
+      ajaxURL: "/assets/data/data.json",
+      columns:[ //Define Table Columns
+          {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150},
+          {title:"Transcript", field:"Transcript_ID", sorter:"number", align:"left"},
+          {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false, headerFilter:true, headerFilterFunc:"like"},
+          {title:"Score", field:"gwCHASMplus score", sorter:"number", align:"center", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
+          {title:"Cancer type (highest prevalence)", field:"cancer type with highest prevalence", sorter:"string", align:"center"},
+          {title:"Number of mutations (highest cancer type)", field:"number of mutations (highest cancer type)", sorter:"number", align:"center"},
+          {title:"Frequency (highest cancer type)", field:"frequency category (highest cancer type)", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}},
+          {title:"Detailed info", field:"url", sorter:"string", align:"center", formatter:"html"},
+      ],
+  });
+
+  $("#tabulator-controls input[name=name]").on("keyup", function(){
+    $("#example-table").tabulator("setFilter", "Hugo_Symbol", "like", $(this).val())
+  });
+
+  $("#tabulator-controls select[name=ctype]").on("change", function(){
+    if ($(this).val()=="All") {
+      $("#example-table").tabulator("setFilter", "cancer type with highest prevalence", "!=", $(this).val())
+    } else {
+      $("#example-table").tabulator("setFilter", "cancer type with highest prevalence", "=", $(this).val())
+    }
+  });
+
+  $("#tabulator-controls input[type=checkbox]").on("change", function(){
+    if ($(this).is(':checked') == true) {
+      $("#example-table").tabulator("showColumn", $(this).attr("name"))
+    } else {
+      $("#example-table").tabulator("hideColumn", $(this).attr("name"))
+    }
+  });
+
+  $("#tabulator-controls button[name=csv-download]").on("click", function(){
+    $("#example-table").tabulator("download", "csv", "pancan-result.csv");
+  });
+
+  $("#tabulator-controls button[name=xlsx-download]").on("click", function(){
+    $("#example-table").tabulator("download", "xlsx", "pancan-result.xlsx", {sheetName:"PANCAN"});
+  });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>

@@ -21,17 +21,71 @@ permalink: /index.html
 ---
 <div style="text-align:center"><h1>Explore driver mutations</h1></div>
 
-<div id="header-home">
-    <div class="row">
-        <div class="small-12 columns">
-            <img width="930" src="https://karchinlab.github.io/CHASMplus/images/cravat.jpeg" style="display:block;margin-left:auto;margin-right:auto;">
-        </div><!-- /.medium-4.columns -->
-    </div><!-- /.row -->
-</div><!-- /#header-home -->
+<div id="tabulator-controls" class="table-controls">
+  <div class="medium-8" style="display:block;margin-left:auto;margin-right:auto;">
+    <input name="name" type="text" placeholder="Search by gene name" class="form-control">
+  </div>
+  <div class="medium-2 columns">
+    <div style="float:left;">Cancer type:</div>
+    <select name="ctype" placeholder="Select a cancer type">
+      <option value="All">All types</option>
+      <option value="THCA">THCA</option>
+      <option value="BRCA">BRCA</option>
+      <option value="LGG">LGG</option>
+      <option value="UCEC">UCEC</option>
+      <option value="GBM">GBM</option>
+      <option value="LIHC">LIHC</option>
+      <option value="STAD">STAD</option>
+      <option value="PRAD">PRAD</option>
+      <option value="BLCA">BLCA</option>
+      <option value="OV">OV</option>
+      <option value="LUAD">LUAD</option>
+      <option value="UVM">UVM</option>
+      <option value="PAAD">PAAD</option>
+      <option value="LUSC">LUSC</option>
+      <option value="COAD">COAD</option>
+      <option value="UCS">UCS</option>
+      <option value="TGCT">TGCT</option>
+      <option value="READ">READ</option>
+      <option value="HNSC">HNSC</option>
+      <option value="KIRP">KIRP</option>
+      <option value="KIRC">KIRC</option>
+      <option value="MESO">MESO</option>
+      <option value="ESCA">ESCA</option>
+      <option value="CESC">CESC</option>
+      <option value="LAML">LAML</option>
+      <option value="CHOL">CHOL</option>
+      <option value="SARC">SARC</option>
+      <option value="DLBC">DLBC</option>
+      <option value="THYM">THYM</option>
+      <option value="KICH">KICH</option>
+      <option value="ACC">ACC</option>
+      <option value="PCPG">PCPG</option>
+    </select>
+  </div>
+  <div class="medium-6 columns" style="display:block;margin-left:auto;margin-right:auto;">
+    Columns:<br>
+    <input type="checkbox" name="Hugo_Symbol" checked> Gene
+    <input type="checkbox" name="Transcript_ID" checked> Transcript
+    <input type="checkbox" name="HGVSp_Short" checked> Mutation
+    <input type="checkbox" name="gwCHASMplus score" checked> Score
+    <input type="checkbox" name="cancer type with highest prevalence" checked> Cancer type
+    <br>
+    <input type="checkbox" name="number of mutations (highest cancer type)" checked> Number of mutations
+    <input type="checkbox" name="frequency category (highest cancer type)" checked> Frequency
+    <input type="checkbox" name="url" checked> Detailed information
+  </div>
+  <div class="medium-4 columns">
+    Download:<br>
+    <button type="button" name="csv-download">CSV</button>
+    <button type="button" name="xlsx-download">Excel</button>
+  </div>
+</div>
+<div id="example-table" class="medium-12 columns"></div>
+
+<!--
 <br>
-
-<p>Large-scale cancer sequencing studies of patient cohorts have statistically implicated many cancer driver genes, with a long-tail of infrequently mutated genes. Here we present CHASMplus, a computational method to predict driver missense mutations, which is uniquely powered to identify rare driver mutations within the long-tail. We show that it substantially outperforms comparable methods across a wide variety of benchmark sets. Applied to 8,657 samples across 32 cancer types, CHASMplus identifies over 4,000 unique driver mutations in 240 genes, further distinguished by their specific cancer types. Our results support a prominent emerging role for rare driver mutations, with substantial variability in the frequency spectrum of drivers across cancer types. The trajectory of driver discovery may already be effectively saturated for certain cancer types, a finding with policy implications for future sequencing.</p>
-
+<br>
 <p><strong>Interactive viewers:</strong></p>
 <ul class="side-nav">
 <li><a href="http://www.cravat.us/CRAVAT/job_detail.html?job_id=collintokheim_20180815_205745">ACC: Adrenocortical carcinoma</a></li>
@@ -69,3 +123,4 @@ permalink: /index.html
 <li><a href="http://www.cravat.us/CRAVAT/job_detail.html?job_id=collintokheim_20180815_210542">UCS: Uterine Carcinosarcoma</a></li>
 <li><a href="http://www.cravat.us/CRAVAT/job_detail.html?job_id=collintokheim_20180815_210535">UVM: Uveal Melanoma</a></li>
 </ul>
+-->
