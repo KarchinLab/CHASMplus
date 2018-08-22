@@ -24,8 +24,8 @@ author: Collin Tokheim
 
 # This URL is the main address for absolute links. Don't include a slash at the end.
 #
-url: 'https://karchinlab.github.io/CHASMplus'
-baseurl: 'https://karchinlab.github.io/CHASMplus'
+url: 'https://karchinlab.github.io'
+baseurl: '/CHASMplus'
 
 # This is for the editing function in _/includes/improve_content
 # Leave it empty if your site is not on GitHub/GitHub Pages
