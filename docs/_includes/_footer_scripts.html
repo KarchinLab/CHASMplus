@@ -63,11 +63,10 @@ s0.parentNode.insertBefore(s1,s0);
 <script type="text/javascript">
 
   $("#example-table").tabulator({
-      height:700, // set height of table to enable virtual DOM
-      //data:tabledata, //load initial data into table
-      layout:"fitColumns", //fit columns to width of table (optional)
+      height:700, 
+      layout:"fitColumns",
       ajaxURL: "{{ site.baseurl }}/assets/data/data.json",
-      columns:[ //Define Table Columns
+      columns:[
           {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150},
           {title:"Transcript", field:"Transcript_ID", sorter:"number", align:"left"},
           {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false, headerFilter:true, headerFilterFunc:"like"},
