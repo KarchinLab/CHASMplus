@@ -59,21 +59,192 @@ s0.parentNode.insertBefore(s1,s0);
 <script src="{{ site.baseurl }}/assets/js/bootstrap.min.js"></script>
 
 <script type="text/javascript" src="{{ site.baseurl }}/assets/js/xlsx.full.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
 <script type="text/javascript">
 
+  // custom calculation for table
+  var mutCountCalc = function(values, data, calcParams){
+    //values - array of column values
+    //data - all table data
+    //calcParams - params passed from the column defintion object
+    var nummut = values.length;
+    var returnStr = 'Unique muts: ' + nummut
+    return returnStr;
+  }
+
+  // custom calculation for table
+  var geneCountCalc = function(values, data, calcParams){
+    //values - array of column values
+    //data - all table data
+    //calcParams - params passed from the column defintion object
+
+    // get a word count dictionary
+    var occurences = { };
+    for (var i = 0; i < values.length; i++) {
+        if (typeof occurences[values[i]] == "undefined") {
+            occurences[values[i]] = 1;
+        } else {
+            occurences[values[i]]++;
+        }
+    }
+
+    // handle plotly interaction
+    var geneList = [];
+    var geneCountList = [];
+    for (var key in occurences) {
+      geneList.push(key);
+      geneCountList.push(occurences[key]);
+    }
+    var data = [
+    {
+      x: geneList,
+      y: geneCountList,
+      type: 'bar',
+      transforms: [{
+        type: 'sort',
+        target: 'y',
+        order: 'descending'
+      }]
+    }
+    ];
+    var layout = {
+      title: false,
+      margin: {
+        l: 50,
+        r: 50,
+        b: 100,
+        t: 30,
+        pad: 4
+      },
+      xaxis: {
+        title: 'genes'
+      },
+      yaxis: {
+        title: '# unique mutations'
+      }
+    }
+    Plotly.newPlot('bar-chart', data, layout);
+
+    //format results
+    var numgenes = Object.keys(occurences).length ;
+    var returnStr = '# genes: ' + numgenes;
+    return returnStr;
+  }
+
+  // custom calculation for table
+  var freqCountCalc = function(values, data, calcParams){
+    //values - array of column values
+    //data - all table data
+    //calcParams - params passed from the column defintion object
+
+    // get a word count dictionary
+    var occurences = {"common": 0, 'intermediate': 0, 'rare': 0};
+    for (var i = 0; i < values.length; i++) {
+        occurences[values[i]]++;
+    }
+
+    // create formatted string
+    var returnStr = 'C:' + occurences['common'] + ', I:' + occurences['intermediate'] + ', R:' + occurences['rare'];
+
+    // figure out the overall proportion
+    totMutOccurence = {'common': {}, 'intermediate': {}, 'rare': {}}
+    for (var key in data) {
+      var row = data[key];
+      totMutOccurence[row['frequency category (highest cancer type)']][row['Hugo_Symbol'] + '_' + row['HGVSp_Short']] = row['number of mutations']
+    }
+    // sum all of the mutations
+    var categories = ['common', 'intermediate', 'rare'];
+    var plotValues = [];
+    var mysum = 0;
+    for (var c in categories){
+      mysum = 0;
+      var tmp = totMutOccurence[categories[c]];
+      for (var variant in tmp) {
+        mysum = mysum + tmp[variant];
+      }
+      plotValues.push(mysum);
+    }
+
+    // create pie chart
+    var data = [{
+      values: plotValues,
+      labels: categories,
+      type: 'pie'
+    }];
+
+    var layout = {
+      title: 'Overall proportion',
+      height: 400,
+      width: 500
+    };
+
+    Plotly.newPlot('pie-chart', data, layout);
+
+    return returnStr;
+  }
+
+  var scoreCalc = function(values, data, calcParams){
+    // calculate mean for bottom calc of table
+    var mysum = 0;
+    for (var i = 0; i < values.length; i++) {
+      mysum += values[i]
+    }
+    var mymean = mysum / values.length;
+    var returnStr = 'Mean: ' + mymean.toFixed(3);
+
+    // make violin plot
+    var data = [{
+      type: 'violin',
+      y: values,
+      points: 'none',
+      box: {
+        visible: true
+      },
+      boxpoints: false,
+      line: {
+        color: 'black'
+      },
+      fillcolor: '#8dd3c7',
+      opacity: 0.6,
+      meanline: {
+        visible: true
+      },
+      x0: "Scores"
+    }]
+
+    var layout = {
+      title: false,
+      margin: {
+        l: 50,
+        r: 50,
+        b: 100,
+        t: 30,
+        pad: 4
+      },
+      yaxis: {
+        title: "Score",
+        zeroline: false
+      }
+    }
+
+    Plotly.newPlot('violin-chart', data, layout);
+
+    return returnStr;
+  }
+
   $("#example-table").tabulator({
-      height:700, 
+      height:700,
       layout:"fitColumns",
       ajaxURL: "{{ site.baseurl }}/assets/data/data.json",
       columns:[
-          {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150},
+          {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150, headerFilter:true, headerFilterFunc:"=", bottomCalc:geneCountCalc},
           {title:"Transcript", field:"Transcript_ID", sorter:"number", align:"left"},
-          {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false, headerFilter:true, headerFilterFunc:"like"},
-          {title:"Score", field:"gwCHASMplus score", sorter:"number", align:"center", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
-          {title:"Cancer type (highest prevalence)", field:"cancer type with highest prevalence", sorter:"string", align:"center"},
-          {title:"Number of mutations (highest cancer type)", field:"number of mutations (highest cancer type)", sorter:"number", align:"center"},
-          {title:"Frequency (highest cancer type)", field:"frequency category (highest cancer type)", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}},
+          {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false, headerFilter:true, headerFilterFunc:"like", bottomCalc:mutCountCalc},
+          {title:"Score", field:"gwCHASMplus score", sorter:"number", align:"center", bottomCalc:scoreCalc, headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
+          {title:"Cancer type (highest prevalence)", field:"cancer type with highest prevalence", sorter:"string", align:"center", headerFilter:true, headerFilterFunc:"=",},
+          {title:"Number of mutations", field:"number of mutations", sorter:"number", align:"center"},
+          {title:"Frequency (highest cancer type)", field:"frequency category (highest cancer type)", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, bottomCalc:freqCountCalc},
           {title:"Detailed info", field:"url", sorter:"string", align:"center", formatter:"html"},
       ],
   });
@@ -105,6 +276,9 @@ s0.parentNode.insertBefore(s1,s0);
   $("#tabulator-controls button[name=xlsx-download]").on("click", function(){
     $("#example-table").tabulator("download", "xlsx", "pancan-result.xlsx", {sheetName:"PANCAN"});
   });
+
+
+
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>

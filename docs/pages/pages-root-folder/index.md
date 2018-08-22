@@ -25,6 +25,13 @@ permalink: /index.html
   <div class="medium-8" style="display:block;margin-left:auto;margin-right:auto;">
     <input name="name" type="text" placeholder="Search by gene name" class="form-control">
   </div>
+</div>
+
+<div id="bar-chart" class="medium-12 columns"> </div>
+<div id="pie-chart" class="medium-6 columns"> </div>
+<div id="violin-chart" class="medium-6 columns"> </div>
+
+<div id="tabulator-controls" class="table-controls">
   <div class="medium-2 columns">
     <div style="float:left;">Cancer type:</div>
     <select name="ctype" placeholder="Select a cancer type">
@@ -82,6 +89,7 @@ permalink: /index.html
   </div>
 </div>
 <div id="example-table" class="medium-12 columns"></div>
+
 
 <!--
 <br>
