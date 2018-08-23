@@ -90,41 +90,43 @@ s0.parentNode.insertBefore(s1,s0);
     }
 
     // handle plotly interaction
-    var geneList = [];
-    var geneCountList = [];
-    for (var key in occurences) {
-      geneList.push(key);
-      geneCountList.push(occurences[key]);
-    }
-    var data = [
-    {
-      x: geneList,
-      y: geneCountList,
-      type: 'bar',
-      transforms: [{
-        type: 'sort',
-        target: 'y',
-        order: 'descending'
-      }]
-    }
-    ];
-    var layout = {
-      title: false,
-      margin: {
-        l: 50,
-        r: 50,
-        b: 100,
-        t: 30,
-        pad: 4
-      },
-      xaxis: {
-        title: 'genes'
-      },
-      yaxis: {
-        title: '# unique mutations'
+    if (values.length > 0){
+      var geneList = [];
+      var geneCountList = [];
+      for (var key in occurences) {
+        geneList.push(key);
+        geneCountList.push(occurences[key]);
       }
+      var data = [
+      {
+        x: geneList,
+        y: geneCountList,
+        type: 'bar',
+        transforms: [{
+          type: 'sort',
+          target: 'y',
+          order: 'descending'
+        }]
+      }
+      ];
+      var layout = {
+        title: false,
+        margin: {
+          l: 50,
+          r: 50,
+          b: 100,
+          t: 30,
+          pad: 4
+        },
+        xaxis: {
+          title: 'genes'
+        },
+        yaxis: {
+          title: '# unique mutations'
+        }
+      }
+      Plotly.newPlot('bar-chart', data, layout);
     }
-    Plotly.newPlot('bar-chart', data, layout);
 
     //format results
     var numgenes = Object.keys(occurences).length ;
@@ -140,95 +142,101 @@ s0.parentNode.insertBefore(s1,s0);
 
     // get a word count dictionary
     var occurences = {"common": 0, 'intermediate': 0, 'rare': 0};
-    for (var i = 0; i < values.length; i++) {
-        occurences[values[i]]++;
+
+    if (values.length > 0) {
+      for (var i = 0; i < values.length; i++) {
+          occurences[values[i]]++;
+      }
+
+      // figure out the overall proportion
+      totMutOccurence = {'common': {}, 'intermediate': {}, 'rare': {}}
+      for (var key in data) {
+        var row = data[key];
+        totMutOccurence[row['frequency category (highest cancer type)']][row['Hugo_Symbol'] + '_' + row['HGVSp_Short']] = row['number of mutations']
+      }
+      // sum all of the mutations
+      var categories = ['common', 'intermediate', 'rare'];
+      var plotValues = [];
+      var mysum = 0;
+      for (var c in categories){
+        mysum = 0;
+        var tmp = totMutOccurence[categories[c]];
+        for (var variant in tmp) {
+          mysum = mysum + tmp[variant];
+        }
+        plotValues.push(mysum);
+      }
+
+      // create pie chart
+      var data = [{
+        values: plotValues,
+        labels: categories,
+        type: 'pie'
+      }];
+
+      var layout = {
+        title: 'Overall proportion',
+        height: 400,
+        width: 500
+      };
+
+      Plotly.newPlot('pie-chart', data, layout);
     }
 
     // create formatted string
     var returnStr = 'C:' + occurences['common'] + ', I:' + occurences['intermediate'] + ', R:' + occurences['rare'];
-
-    // figure out the overall proportion
-    totMutOccurence = {'common': {}, 'intermediate': {}, 'rare': {}}
-    for (var key in data) {
-      var row = data[key];
-      totMutOccurence[row['frequency category (highest cancer type)']][row['Hugo_Symbol'] + '_' + row['HGVSp_Short']] = row['number of mutations']
-    }
-    // sum all of the mutations
-    var categories = ['common', 'intermediate', 'rare'];
-    var plotValues = [];
-    var mysum = 0;
-    for (var c in categories){
-      mysum = 0;
-      var tmp = totMutOccurence[categories[c]];
-      for (var variant in tmp) {
-        mysum = mysum + tmp[variant];
-      }
-      plotValues.push(mysum);
-    }
-
-    // create pie chart
-    var data = [{
-      values: plotValues,
-      labels: categories,
-      type: 'pie'
-    }];
-
-    var layout = {
-      title: 'Overall proportion',
-      height: 400,
-      width: 500
-    };
-
-    Plotly.newPlot('pie-chart', data, layout);
-
     return returnStr;
   }
 
   var scoreCalc = function(values, data, calcParams){
     // calculate mean for bottom calc of table
     var mysum = 0;
-    for (var i = 0; i < values.length; i++) {
-      mysum += values[i]
-    }
-    var mymean = mysum / values.length;
-    var returnStr = 'Mean: ' + mymean.toFixed(3);
-
-    // make violin plot
-    var data = [{
-      type: 'violin',
-      y: values,
-      points: 'none',
-      box: {
-        visible: true
-      },
-      boxpoints: false,
-      line: {
-        color: 'black'
-      },
-      fillcolor: '#8dd3c7',
-      opacity: 0.6,
-      meanline: {
-        visible: true
-      },
-      x0: "Scores"
-    }]
-
-    var layout = {
-      title: false,
-      margin: {
-        l: 50,
-        r: 50,
-        b: 100,
-        t: 30,
-        pad: 4
-      },
-      yaxis: {
-        title: "Score",
-        zeroline: false
+    if (values.length > 0) {
+      for (var i = 0; i < values.length; i++) {
+        mysum += values[i]
       }
-    }
+      var mymean = mysum / values.length;
+      var returnStr = 'Mean: ' + mymean.toFixed(3);
 
-    Plotly.newPlot('violin-chart', data, layout);
+      // make violin plot
+      var data = [{
+        type: 'violin',
+        y: values,
+        points: 'none',
+        box: {
+          visible: true
+        },
+        boxpoints: false,
+        line: {
+          color: 'black'
+        },
+        fillcolor: '#8dd3c7',
+        opacity: 0.6,
+        meanline: {
+          visible: true
+        },
+        x0: "Scores"
+      }]
+
+      var layout = {
+        title: false,
+        margin: {
+          l: 50,
+          r: 50,
+          b: 100,
+          t: 30,
+          pad: 4
+        },
+        yaxis: {
+          title: "Score",
+          zeroline: false
+        }
+      }
+
+      Plotly.newPlot('violin-chart', data, layout);
+    } else {
+      var returnStr = 'Mean: 0'
+    }
 
     return returnStr;
   }
