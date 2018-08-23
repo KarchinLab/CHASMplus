@@ -21,7 +21,7 @@ cancer drivers. We summarize results with interactive widgets, provide search ca
 Enter in the HUGO gene symbol at the top of the page to search for all predicted
 driver mutations for a particular gene.
 
-![Figure 1](/images/gene_search.png)
+![Figure 1]({{ site.url }}{{ site.baseurl }}/images/gene_search.png)
 
 ## Summary plots
 
@@ -32,7 +32,7 @@ All searches will dynamically change the summary plots.
 The table provides a listing of all predicted driver mutations meeting your
 search criteria.
 
-![Figure 2](/images/table.png)
+![Figure 2]({{ site.url }}{{ site.baseurl }}/images/table.png)
 
 **Additional variant information:**
 
@@ -41,7 +41,7 @@ provides more information on the variant, including a lollipop plot, protein str
 viewer and gene network graph. You can read help about using these widgets from
 the [CRAVAT](http://www.cravat.us/CRAVAT/help.jsp) and [MuPIT](http://mupit.icm.jhu.edu/MuPIT_Interactive/Help.html) help pages.
 
-![Figure 3](/images/single_variant_page.png)
+![Figure 3]({{ site.url }}{{ site.baseurl }}/images/single_variant_page.png)
 
 **Toggle columns:**
 
