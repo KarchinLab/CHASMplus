@@ -63,23 +63,23 @@ s0.parentNode.insertBefore(s1,s0);
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/3.5.3/js/tabulator.min.js"></script>
 <script type="text/javascript">
 
-  // custom calculation for table
+  /* custom calculation for table */
   var mutCountCalc = function(values, data, calcParams){
-    //values - array of column values
-    //data - all table data
-    //calcParams - params passed from the column defintion object
+    /* values - array of column values */
+    /* data - all table data */
+    /* calcParams - params passed from the column defintion object */
     var nummut = values.length;
     var returnStr = 'Unique muts: ' + nummut
     return returnStr;
   }
 
-  // custom calculation for table
+  /* custom calculation for table */
   var geneCountCalc = function(values, data, calcParams){
-    //values - array of column values
-    //data - all table data
-    //calcParams - params passed from the column defintion object
+    /* values - array of column values */
+    /* data - all table data */
+    /* calcParams - params passed from the column defintion object */
 
-    // get a word count dictionary
+    /* get a word count dictionary */
     var occurences = { };
     for (var i = 0; i < values.length; i++) {
         if (typeof occurences[values[i]] == "undefined") {
@@ -89,7 +89,7 @@ s0.parentNode.insertBefore(s1,s0);
         }
     }
 
-    // handle plotly interaction
+    /* handle plotly interaction */
     if (values.length > 0){
       var geneList = [];
       var geneCountList = [];
@@ -128,19 +128,19 @@ s0.parentNode.insertBefore(s1,s0);
       Plotly.newPlot('bar-chart', data, layout);
     }
 
-    //format results
+    /* format results */
     var numgenes = Object.keys(occurences).length ;
     var returnStr = '# genes: ' + numgenes;
     return returnStr;
   }
 
-  // custom calculation for table
+  /* custom calculation for table */
   var freqCountCalc = function(values, data, calcParams){
-    //values - array of column values
-    //data - all table data
-    //calcParams - params passed from the column defintion object
+    /* values - array of column values */
+    /* data - all table data */
+    /* calcParams - params passed from the column defintion object */
 
-    // get a word count dictionary
+    /* get a word count dictionary */
     var occurences = {"common": 0, 'intermediate': 0, 'rare': 0};
 
     if (values.length > 0) {
@@ -148,13 +148,13 @@ s0.parentNode.insertBefore(s1,s0);
           occurences[values[i]]++;
       }
 
-      // figure out the overall proportion
+      /* figure out the overall proportion */
       totMutOccurence = {'common': {}, 'intermediate': {}, 'rare': {}}
       for (var key in data) {
         var row = data[key];
         totMutOccurence[row['frequency category (highest cancer type)']][row['Hugo_Symbol'] + '_' + row['HGVSp_Short']] = row['number of mutations']
       }
-      // sum all of the mutations
+      /* sum all of the mutations */
       var categories = ['common', 'intermediate', 'rare'];
       var plotValues = [];
       var mysum = 0;
@@ -167,7 +167,7 @@ s0.parentNode.insertBefore(s1,s0);
         plotValues.push(mysum);
       }
 
-      // create pie chart
+      /* create pie chart */
       var data = [{
         values: plotValues,
         labels: categories,
@@ -183,13 +183,13 @@ s0.parentNode.insertBefore(s1,s0);
       Plotly.newPlot('pie-chart', data, layout);
     }
 
-    // create formatted string
+    /* create formatted string */
     var returnStr = 'C:' + occurences['common'] + ', I:' + occurences['intermediate'] + ', R:' + occurences['rare'];
     return returnStr;
   }
 
   var scoreCalc = function(values, data, calcParams){
-    // calculate mean for bottom calc of table
+    /* calculate mean for bottom calc of table */
     var mysum = 0;
     if (values.length > 0) {
       for (var i = 0; i < values.length; i++) {
@@ -198,7 +198,7 @@ s0.parentNode.insertBefore(s1,s0);
       var mymean = mysum / values.length;
       var returnStr = 'Mean: ' + mymean.toFixed(3);
 
-      // make violin plot
+      /* make violin plot */
       var data = [{
         type: 'violin',
         y: values,
@@ -246,13 +246,13 @@ s0.parentNode.insertBefore(s1,s0);
       layout:"fitColumns",
       ajaxURL: "{{ site.baseurl }}/assets/data/data.json",
       columns:[
-          {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150, headerFilter:true, headerFilterFunc:"="},
+          {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150, headerFilter:true, headerFilterFunc:"=", bottomCalc:geneCountCalc},
           {title:"Transcript", field:"Transcript_ID", sorter:"number", align:"left"},
-          {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false, headerFilter:true, headerFilterFunc:"like"},
-          {title:"Score", field:"gwCHASMplus score", sorter:"number", align:"center", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
+          {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false, headerFilter:true, headerFilterFunc:"like", bottomCalc:mutCountCalc},
+          {title:"Score", field:"gwCHASMplus score", sorter:"number", align:"center", bottomCalc:scoreCalc, headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
           {title:"Cancer type (highest prevalence)", field:"cancer type with highest prevalence", sorter:"string", align:"center", headerFilter:true, headerFilterFunc:"=",},
           {title:"Number of mutations", field:"number of mutations", sorter:"number", align:"center"},
-          {title:"Frequency (highest cancer type)", field:"frequency category (highest cancer type)", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}},
+          {title:"Frequency (highest cancer type)", field:"frequency category (highest cancer type)", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, bottomCalc:freqCountCalc},
           {title:"Detailed info", field:"url", sorter:"string", align:"center", formatter:"html"},
       ],
   });
