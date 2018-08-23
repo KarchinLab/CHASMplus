@@ -236,7 +236,7 @@ s0.parentNode.insertBefore(s1,s0);
           {title:"Cancer type (highest prevalence)", field:"cancer type with highest prevalence", sorter:"string", align:"center", headerFilter:true, headerFilterFunc:"=",},
           {title:"Number of mutations", field:"number of mutations", sorter:"number", align:"center"},
           {title:"Frequency (highest cancer type)", field:"frequency category (highest cancer type)", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, bottomCalc:freqCountCalc},
-          {title:"Detailed info", field:"url", sorter:"string", align:"center", formatter:"html"},
+          {title:"Detailed info", field:"url", sorter:"string", align:"center", formatter:"link", formatterParams:{label: "More details"}},
       ],
   });
   $("#example-table").tabulator("hideColumn", "Transcript_ID");
