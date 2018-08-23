@@ -157,7 +157,12 @@ s0.parentNode.insertBefore(s1,s0);
       var layout = {
         title: 'Overall proportion',
         height: 400,
-        width: 500
+        width: 500,
+        margin: {
+          l: 0,
+          r: 0
+        },
+        legend: {"orientation": "h", 'xanchor': 'center', 'x': 0.5}
       };
 
       Plotly.newPlot('pie-chart', data, layout);
@@ -221,7 +226,7 @@ s0.parentNode.insertBefore(s1,s0);
   $("#example-table").tabulator({
       height:700,
       layout:"fitColumns",
-      responsiveLayout: "collapse",
+      responsiveLayout: "hide",
       ajaxURL: "{{ site.baseurl }}/assets/data/data.json",
       columns:[
           {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150, headerFilter:true, headerFilterFunc:"=", bottomCalc:geneCountCalc},
