@@ -8,6 +8,10 @@
 #
 #   Navigation to the right › side: right
 #
+- title: "Help"
+  url: "/help/"
+  side: right
+
 - title: "Info"
   url: "/info/"
   side: right
