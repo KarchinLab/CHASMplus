@@ -78,7 +78,7 @@ permalink: /index.html
     <input type="checkbox" name="gwCHASMplus score" checked> Score
     <input type="checkbox" name="cancer type with highest prevalence" checked> Cancer type
     <br>
-    <input type="checkbox" name="number of mutations (highest cancer type)" checked> Number of mutations
+    <input type="checkbox" name="number of mutations" checked> Number of mutations
     <input type="checkbox" name="frequency category (highest cancer type)" checked> Frequency
     <input type="checkbox" name="url" checked> Detailed information
   </div>
