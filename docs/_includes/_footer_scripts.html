@@ -246,13 +246,13 @@ s0.parentNode.insertBefore(s1,s0);
       layout:"fitColumns",
       ajaxURL: "{{ site.baseurl }}/assets/data/data.json",
       columns:[
-          {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150, headerFilter:true, headerFilterFunc:"=", bottomCalc:geneCountCalc},
+          {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150, headerFilter:true, headerFilterFunc:"="},
           {title:"Transcript", field:"Transcript_ID", sorter:"number", align:"left"},
-          {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false, headerFilter:true, headerFilterFunc:"like", bottomCalc:mutCountCalc},
-          {title:"Score", field:"gwCHASMplus score", sorter:"number", align:"center", bottomCalc:scoreCalc, headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
+          {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false, headerFilter:true, headerFilterFunc:"like"},
+          {title:"Score", field:"gwCHASMplus score", sorter:"number", align:"center", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
           {title:"Cancer type (highest prevalence)", field:"cancer type with highest prevalence", sorter:"string", align:"center", headerFilter:true, headerFilterFunc:"=",},
           {title:"Number of mutations", field:"number of mutations", sorter:"number", align:"center"},
-          {title:"Frequency (highest cancer type)", field:"frequency category (highest cancer type)", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, bottomCalc:freqCountCalc},
+          {title:"Frequency (highest cancer type)", field:"frequency category (highest cancer type)", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}},
           {title:"Detailed info", field:"url", sorter:"string", align:"center", formatter:"html"},
       ],
   });
