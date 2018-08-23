@@ -73,7 +73,7 @@ permalink: /index.html
   <div class="medium-6 columns" style="display:block;margin-left:auto;margin-right:auto;">
     Columns:<br>
     <input type="checkbox" name="Hugo_Symbol" checked> Gene
-    <input type="checkbox" name="Transcript_ID" checked> Transcript
+    <input type="checkbox" name="Transcript_ID"> Transcript
     <input type="checkbox" name="HGVSp_Short" checked> Mutation
     <input type="checkbox" name="gwCHASMplus score" checked> Score
     <input type="checkbox" name="cancer type with highest prevalence" checked> Cancer type

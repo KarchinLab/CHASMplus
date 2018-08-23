@@ -221,6 +221,7 @@ s0.parentNode.insertBefore(s1,s0);
   $("#example-table").tabulator({
       height:700,
       layout:"fitColumns",
+      responsiveLayout: "collapse",
       ajaxURL: "{{ site.baseurl }}/assets/data/data.json",
       columns:[
           {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150, headerFilter:true, headerFilterFunc:"=", bottomCalc:geneCountCalc},
@@ -233,6 +234,7 @@ s0.parentNode.insertBefore(s1,s0);
           {title:"Detailed info", field:"url", sorter:"string", align:"center", formatter:"html"},
       ],
   });
+  $("#example-table").tabulator("hideColumn", "Transcript_ID");
 
   $("#tabulator-controls input[name=name]").on("keyup", function(){
     $("#example-table").tabulator("setFilter", "Hugo_Symbol", "like", $(this).val())
