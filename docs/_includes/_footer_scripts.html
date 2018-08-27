@@ -64,19 +64,28 @@ s0.parentNode.insertBefore(s1,s0);
 <script type="text/javascript">
 
   var mutCountCalc = function(values, data, calcParams){
-    var nummut = values.length;
-    var returnStr = 'Unique muts: ' + nummut
+    var mutSet = new Set();
+    for (var key in data){
+      var row = data[key];
+      mutSet.add(row['Hugo_Symbol'] + '_' + row['HGVSp_Short']);
+    }
+    var returnStr = 'Unique muts: ' + mutSet.size;
     return returnStr;
   }
 
   var geneCountCalc = function(values, data, calcParams){
-    var occurences = { };
-    for (var i = 0; i < values.length; i++) {
-        if (typeof occurences[values[i]] == "undefined") {
-            occurences[values[i]] = 1;
-        } else {
-            occurences[values[i]]++;
-        }
+    totMutOccurence = {};
+    for (var key in data) {
+      var row = data[key];
+      if (typeof totMutOccurence[row['Hugo_Symbol']] == "undefined") {
+        totMutOccurence[row['Hugo_Symbol']] = new Set();
+      }
+      totMutOccurence[row['Hugo_Symbol']].add(row['HGVSp_Short']);
+    }
+
+    var occurences = {};
+    for (var key in totMutOccurence) {
+      occurences[key] = totMutOccurence[key].size;
     }
 
     if (values.length > 0){
@@ -133,7 +142,7 @@ s0.parentNode.insertBefore(s1,s0);
       totMutOccurence = {'common': {}, 'intermediate': {}, 'rare': {}}
       for (var key in data) {
         var row = data[key];
-        totMutOccurence[row['frequency category (highest cancer type)']][row['Hugo_Symbol'] + '_' + row['HGVSp_Short']] = row['number of mutations']
+        totMutOccurence[row['frequency category']][row['Hugo_Symbol'] + '_' + row['HGVSp_Short']] = row['number of mutations']
       }
 
       var categories = ['common', 'intermediate', 'rare'];
@@ -229,28 +238,33 @@ s0.parentNode.insertBefore(s1,s0);
       responsiveLayout: "hide",
       ajaxURL: "{{ site.baseurl }}/assets/data/data.json",
       columns:[
+          {title:"Analysis", field:"analysis", sorter:"string", width:150},
           {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150, headerFilter:true, headerFilterFunc:"=", bottomCalc:geneCountCalc},
           {title:"Transcript", field:"Transcript_ID", sorter:"number", align:"left"},
           {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false, headerFilter:true, headerFilterFunc:"like", bottomCalc:mutCountCalc},
           {title:"Score", field:"gwCHASMplus score", sorter:"number", align:"center", bottomCalc:scoreCalc, headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
-          {title:"Cancer type (highest prevalence)", field:"cancer type with highest prevalence", sorter:"string", align:"center", headerFilter:true, headerFilterFunc:"=",},
+          {title:"Cancer type", field:"cancer type", sorter:"string", align:"center", headerFilter:true, headerFilterFunc:"=",},
           {title:"Number of mutations", field:"number of mutations", sorter:"number", align:"center"},
-          {title:"Frequency (highest cancer type)", field:"frequency category (highest cancer type)", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, bottomCalc:freqCountCalc},
+          {title:"Frequency", field:"frequency category", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, bottomCalc:freqCountCalc},
           {title:"Detailed info", field:"url", sorter:"string", align:"center", formatter:"link", formatterParams:{label: "More details"}},
       ],
   });
+  $("#example-table").tabulator("hideColumn", "analysis");
   $("#example-table").tabulator("hideColumn", "Transcript_ID");
+  $("#example-table").tabulator("setFilter", "analysis", "=", "pan-cancer");
 
   $("#tabulator-controls input[name=name]").on("keyup", function(){
-    $("#example-table").tabulator("setFilter", "Hugo_Symbol", "like", $(this).val())
+    $("#example-table").tabulator("setFilter", [
+      {field: "Hugo_Symbol", type: "like", value:$(this).val()},
+      {field: "analysis", type: "=", value:$("#analysisDropdown").val()}
+    ]);
   });
 
   $("#tabulator-controls select[name=ctype]").on("change", function(){
-    if ($(this).val()=="All") {
-      $("#example-table").tabulator("setFilter", "cancer type with highest prevalence", "!=", $(this).val())
-    } else {
-      $("#example-table").tabulator("setFilter", "cancer type with highest prevalence", "=", $(this).val())
-    }
+    $("#example-table").tabulator("setFilter", [
+      {field: "analysis", type: "=", value:$(this).val()},
+      {field: "Hugo_Symbol", type: "like", value:$("#geneSearch").val()}
+    ]);
   });
 
   $("#tabulator-controls input[type=checkbox]").on("change", function(){

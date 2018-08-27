@@ -34,6 +34,31 @@ search criteria.
 
 ![Figure 2]({{ site.url }}{{ site.baseurl }}/images/table.png)
 
+**Analysis type:**
+
+We performed analysis with CHASMplus in two different manners. The first called
+"pan-cancer" aggregates mutations from multiple cancer types together, while the
+second was done by each cancer type analyzed separately ("cancer type-specific"). You
+can select which analysis you want to examine by using the dropdown menu (see Marker \#1).
+
+In the case of the pan-cancer results where multiple cancer types contain the same mutation,
+the listed cancer type has the highest mutation frequency.
+
+**Toggle columns:**
+
+You can toggle the display of columns by checking/unchecking boxes (see Marker \#2).
+
+**Search capabilities:**
+
+You may enter multiple combinations of searches by using the advanced searches
+available on the table.
+
+* Filter by gene name (exact match, see Marker \#3)
+* Filter by mutation (fuzzy match, see Marker \#4)
+* Filter by mutations with at least a certain CHASMplus score (see Marker \#5)
+* Filter by cancer type (see Marker \#6)
+* Filter by the mutation frequency of the driver mutation (common, intermediate, or rare, see Marker \#7)
+
 **Additional variant information:**
 
 By clicking on the "More details" link for each variant (see Marker \#8), CRAVAT
@@ -42,22 +67,6 @@ viewer and gene network graph. You can read help about using these widgets from
 the [CRAVAT](http://www.cravat.us/CRAVAT/help.jsp) and [MuPIT](http://mupit.icm.jhu.edu/MuPIT_Interactive/Help.html) help pages.
 
 ![Figure 3]({{ site.url }}{{ site.baseurl }}/images/single_variant_page.png)
-
-**Toggle columns:**
-
-You can toggle the display of columns by checking/unchecking boxes (see Marker \#7).
-
-**Search capabilities:**
-
-You may enter multiple combinations of searches by using the advanced searches
-available on the table.
-
-1. Filter by cancer type
-2. Filter by gene name (exact match)
-3. Filter by mutation (fuzzy match)
-4. Filter by mutations with at least a certain CHASMplus score
-5. Filter by cancer type (in table header)
-6. Filter by the mutation frequency of the driver mutation (common, intermediate, or rare)
 
 **Download data:**
 
