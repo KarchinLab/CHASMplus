@@ -38,7 +38,7 @@ search criteria.
 
 We performed analysis with CHASMplus in two different manners. The first called
 "pan-cancer" aggregates mutations from multiple cancer types together, while the
-second was done by each cancer type analyzed separately ("cancer type-specific"). You
+second was done by analyzing each cancer type separately ("cancer type-specific"). You
 can select which analysis you want to examine by using the dropdown menu (see Marker \#1).
 
 In the case of the pan-cancer results where multiple cancer types contain the same mutation,
