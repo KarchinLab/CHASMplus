@@ -41,15 +41,14 @@ permalink: /index.html
   </div>
   <div class="medium-6 columns" style="display:block;margin-left:auto;margin-right:auto;">
     Columns:<br>
-    <input type="checkbox" name="Hugo_Symbol" checked> Gene
-    <input type="checkbox" name="Transcript_ID"> Transcript
-    <input type="checkbox" name="HGVSp_Short" checked> Mutation
-    <input type="checkbox" name="gwCHASMplus score" checked> Score
-    <input type="checkbox" name="cancer type" checked> Cancer type
-    <br>
-    <input type="checkbox" name="number of mutations" checked> Number of mutations
-    <input type="checkbox" name="frequency category" checked> Frequency
-    <input type="checkbox" name="url" checked> Detailed information
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="Hugo_Symbol" checked> Gene</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="Transcript_ID"> Transcript</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="HGVSp_Short" checked> Mutation</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="gwCHASMplus score" checked> Score</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="cancer type" checked> Cancer type</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="number of mutations" checked> Number of mutations</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="frequency category" checked> Frequency</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="url" checked> Detailed information</div>
   </div>
   <div class="medium-3 columns">
     Download:<br>
