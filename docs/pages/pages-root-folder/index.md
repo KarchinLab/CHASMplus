@@ -39,7 +39,7 @@ permalink: /index.html
       <option value="cancer type-specific">cancer type-specific</option>
     </select>
   </div>
-  <div class="medium-6 columns" style="display:block;margin-left:auto;margin-right:auto;">
+  <div class="medium-5 columns" style="display:block;margin-left:auto;margin-right:auto;">
     Columns:<br>
     <div style="white-space: nowrap;display:inline"><input type="checkbox" name="Hugo_Symbol" checked> Gene</div>
     <div style="white-space: nowrap;display:inline"><input type="checkbox" name="Transcript_ID"> Transcript</div>
@@ -49,8 +49,9 @@ permalink: /index.html
     <div style="white-space: nowrap;display:inline"><input type="checkbox" name="number of mutations" checked> Number of mutations</div>
     <div style="white-space: nowrap;display:inline"><input type="checkbox" name="frequency category" checked> Frequency</div>
     <div style="white-space: nowrap;display:inline"><input type="checkbox" name="url" checked> Detailed information</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="Patient ID"> Patient ID</div>
   </div>
-  <div class="medium-3 columns">
+  <div class="medium-4 columns">
     Download:<br>
     <button type="button" name="csv-download">CSV</button>
     <button type="button" name="xlsx-download">Excel</button>
