@@ -70,4 +70,4 @@ the [CRAVAT](http://www.cravat.us/CRAVAT/help.jsp) and [MuPIT](http://mupit.icm.
 
 **Download data:**
 
-You can download data in either excel format (.xlsx file) or as a csv file (see Marker \#9).
+You can download data in either excel format (.xlsx file) or as a csv file (see Marker \#9). You can also download the complete list of TCGA patient IDs used in this analysis [here]({{ site.baseurl }}/assets/data/all_patient_ids.txt).
