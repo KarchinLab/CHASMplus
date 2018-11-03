@@ -7,7 +7,7 @@ CHASMplus: predicting driver somatic missense mutations in human cancers
 ========================================================================
 
 :Author: Collin Tokheim, Rachel Karchin
-:Contact: ctokheim # jhu DOT edu
+:Contact: ctokhei1 # alumni DOT jh DOT edu
 :Lab: `Karchin Lab <http://karchinlab.org/>`_ 
 :Source code: `GitHub <https://github.com/KarchinLab/CHASMplus>`_
 :Q&A: `Biostars (tag: CHASMplus) <https://www.biostars.org/t/CHASMplus/>`_ 

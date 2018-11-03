@@ -9,7 +9,7 @@ Check to make sure your question has not been already answered
 by looking at posts with the tag `CHASMplus <https://www.biostars.org/t/CHASMplus>`_.
 Otherwise, create a new post with the CHASMplus tag. We will be checking
 biostars for questions. You may also contact me directly at
-ctokheim AT jhu dot edu.
+ctokhei1 AT alumni DOT jh DOT edu.
 
 **Are the p-values by CHASMplus valid for targeted gene panels?**
 
