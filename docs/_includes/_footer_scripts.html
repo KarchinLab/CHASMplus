@@ -64,19 +64,28 @@ s0.parentNode.insertBefore(s1,s0);
 <script type="text/javascript">
 
   var mutCountCalc = function(values, data, calcParams){
-    var nummut = values.length;
-    var returnStr = 'Unique muts: ' + nummut
+    var mutSet = new Set();
+    for (var key in data){
+      var row = data[key];
+      mutSet.add(row['Hugo_Symbol'] + '_' + row['HGVSp_Short']);
+    }
+    var returnStr = 'Unique muts: ' + mutSet.size;
     return returnStr;
   }
 
   var geneCountCalc = function(values, data, calcParams){
-    var occurences = { };
-    for (var i = 0; i < values.length; i++) {
-        if (typeof occurences[values[i]] == "undefined") {
-            occurences[values[i]] = 1;
-        } else {
-            occurences[values[i]]++;
-        }
+    totMutOccurence = {};
+    for (var key in data) {
+      var row = data[key];
+      if (typeof totMutOccurence[row['Hugo_Symbol']] == "undefined") {
+        totMutOccurence[row['Hugo_Symbol']] = new Set();
+      }
+      totMutOccurence[row['Hugo_Symbol']].add(row['HGVSp_Short']);
+    }
+
+    var occurences = {};
+    for (var key in totMutOccurence) {
+      occurences[key] = totMutOccurence[key].size;
     }
 
     if (values.length > 0){
@@ -133,7 +142,7 @@ s0.parentNode.insertBefore(s1,s0);
       totMutOccurence = {'common': {}, 'intermediate': {}, 'rare': {}}
       for (var key in data) {
         var row = data[key];
-        totMutOccurence[row['frequency category (highest cancer type)']][row['Hugo_Symbol'] + '_' + row['HGVSp_Short']] = row['number of mutations']
+        totMutOccurence[row['frequency category']][row['Hugo_Symbol'] + '_' + row['HGVSp_Short']] = row['number of mutations']
       }
 
       var categories = ['common', 'intermediate', 'rare'];
@@ -156,11 +165,9 @@ s0.parentNode.insertBefore(s1,s0);
 
       var layout = {
         title: 'Overall proportion',
-        height: 400,
-        width: 500,
         margin: {
-          l: 0,
-          r: 0
+          l: 50,
+          r: 50,
         },
         legend: {"orientation": "h", 'xanchor': 'center', 'x': 0.5}
       };
@@ -227,30 +234,57 @@ s0.parentNode.insertBefore(s1,s0);
       height:700,
       layout:"fitColumns",
       responsiveLayout: "hide",
-      ajaxURL: "{{ site.baseurl }}/assets/data/data.json",
+      ajaxURL: "{{ site.baseurl }}/assets/data/data_v1.1.json",
       columns:[
-          {title:"Gene", field:"Hugo_Symbol", sorter:"string", width:150, headerFilter:true, headerFilterFunc:"=", bottomCalc:geneCountCalc},
-          {title:"Transcript", field:"Transcript_ID", sorter:"number", align:"left"},
-          {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false, headerFilter:true, headerFilterFunc:"like", bottomCalc:mutCountCalc},
-          {title:"Score", field:"gwCHASMplus score", sorter:"number", align:"center", bottomCalc:scoreCalc, headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
-          {title:"Cancer type (highest prevalence)", field:"cancer type with highest prevalence", sorter:"string", align:"center", headerFilter:true, headerFilterFunc:"=",},
-          {title:"Number of mutations", field:"number of mutations", sorter:"number", align:"center"},
-          {title:"Frequency (highest cancer type)", field:"frequency category (highest cancer type)", sorter:"string", align:"center", editorParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, headerFilter:true, headerFilterParams:{"common":"common", "intermediate":"intermediate", "rare":"rare"}, bottomCalc:freqCountCalc},
-          {title:"Detailed info", field:"url", sorter:"string", align:"center", formatter:"html"},
+          {title:"Analysis", field:"analysis", sorter:"string", width:150, responsive: 12},
+          {title:"Gene", field:"Hugo_Symbol", sorter:"string", minWidth: 75,
+           headerFilter:true, headerFilterFunc:"=", bottomCalc:geneCountCalc,
+           responsive: 0},
+          {title:"Transcript", field:"Transcript_ID", sorter:"string",
+           align:"left", responsive: 10, minWidth: 100},
+          {title:"Mutation", field:"HGVSp_Short", sorter:"string", sortable:false,
+           headerFilter:true, headerFilterFunc:"like", bottomCalc:mutCountCalc,
+           responsive: 0, minWidth: 75},
+          {title:"Score", field:"gwCHASMplus score", sorter:"number", align:"center",
+           bottomCalc:scoreCalc, headerFilter:"number", headerFilterPlaceholder:"at least...",
+           headerFilterFunc:">=", responsive: 2, minWidth: 75},
+          {title:"Cancer type", field:"cancer type", sorter:"string", align:"center",
+           responsive: 1, minWidth: 75, headerFilter:"select", headerFilterFunc:"=",
+           headerFilterParams:{"": "All types", "ACC": "ACC", "BRCA": "BRCA", "CESC": "CESC", "CHOL": "CHOL",
+                               "COAD": "COAD", "DLBC": "DLBC", "ESCA": "ESCA", "GBM": "GBM", "HNSC": "HNSC",
+                               "KICH": "KICH", "KIRC": "KIRC", "KIRP": "KIRP", "LAML": "LAML", "LGG": "LGG",
+                               "LIHC": "LIHC", "LUAD": "LUAD", "LUSC": "LUSC", "MESO": "MESO", "OV": "OV",
+                               "PAAD": "PAAD", "PCPG": "PCPG", "PRAD": "PRAD", "READ": "READ", "SARC": "SARC",
+                               "STAD": "STAD", "TGCT": "TGCT", "THCA": "THCA", "THYM": "THYM", "UCEC": "UCEC",
+                               "UCS": "UCS", "UVM": "UVM", "BLCA": "BLCA"}},
+          {title:"Number of mutations", field:"number of mutations", sorter:"number",
+           align:"center", responsive: 3, minWidth: 40},
+          {title:"Patient ID", field:"Patient ID", sorter:"string",
+            align:"center", responsive: 500, minWidth: 50, maxWidth:100},
+          {title:"Frequency", field:"frequency category", sorter:"string", align:"center",
+           headerFilter:"select", headerFilterParams:{"":"All", "common":"common", "intermediate":"intermediate", "rare":"rare"},
+           bottomCalc:freqCountCalc, responsive: 2, minWidth: 100},
+          {title:"Detailed info", field:"url", sorter:"string", align:"center",
+           formatter:"link", formatterParams:{label: "More details"}, responsive: 2, minWidth: 75},
       ],
   });
+  $("#example-table").tabulator("hideColumn", "analysis");
   $("#example-table").tabulator("hideColumn", "Transcript_ID");
+  $("#example-table").tabulator("hideColumn", "Patient ID");
+  $("#example-table").tabulator("setFilter", "analysis", "=", "pan-cancer");
 
   $("#tabulator-controls input[name=name]").on("keyup", function(){
-    $("#example-table").tabulator("setFilter", "Hugo_Symbol", "like", $(this).val())
+    $("#example-table").tabulator("setFilter", [
+      {field: "Hugo_Symbol", type: "like", value:$(this).val()},
+      {field: "analysis", type: "=", value:$("#analysisDropdown").val()}
+    ]);
   });
 
   $("#tabulator-controls select[name=ctype]").on("change", function(){
-    if ($(this).val()=="All") {
-      $("#example-table").tabulator("setFilter", "cancer type with highest prevalence", "!=", $(this).val())
-    } else {
-      $("#example-table").tabulator("setFilter", "cancer type with highest prevalence", "=", $(this).val())
-    }
+    $("#example-table").tabulator("setFilter", [
+      {field: "analysis", type: "=", value:$(this).val()},
+      {field: "Hugo_Symbol", type: "like", value:$("#geneSearch").val()}
+    ]);
   });
 
   $("#tabulator-controls input[type=checkbox]").on("change", function(){

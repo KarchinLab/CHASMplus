@@ -23,7 +23,7 @@ permalink: /index.html
 
 <div id="tabulator-controls" class="table-controls">
   <div class="medium-8" style="display:block;margin-left:auto;margin-right:auto;">
-    <input name="name" type="text" placeholder="Search by gene name" class="form-control">
+    <input name="name" id="geneSearch" type="text" placeholder="Search by gene name" class="form-control">
   </div>
 </div>
 
@@ -32,55 +32,24 @@ permalink: /index.html
 <div id="violin-chart" class="medium-6 columns"> </div>
 
 <div id="tabulator-controls" class="table-controls">
-  <div class="medium-2 columns">
-    <div style="float:left;">Cancer type:</div>
-    <select name="ctype" placeholder="Select a cancer type">
-      <option value="All">All types</option>
-      <option value="THCA">THCA</option>
-      <option value="BRCA">BRCA</option>
-      <option value="LGG">LGG</option>
-      <option value="UCEC">UCEC</option>
-      <option value="GBM">GBM</option>
-      <option value="LIHC">LIHC</option>
-      <option value="STAD">STAD</option>
-      <option value="PRAD">PRAD</option>
-      <option value="BLCA">BLCA</option>
-      <option value="OV">OV</option>
-      <option value="LUAD">LUAD</option>
-      <option value="UVM">UVM</option>
-      <option value="PAAD">PAAD</option>
-      <option value="LUSC">LUSC</option>
-      <option value="COAD">COAD</option>
-      <option value="UCS">UCS</option>
-      <option value="TGCT">TGCT</option>
-      <option value="READ">READ</option>
-      <option value="HNSC">HNSC</option>
-      <option value="KIRP">KIRP</option>
-      <option value="KIRC">KIRC</option>
-      <option value="MESO">MESO</option>
-      <option value="ESCA">ESCA</option>
-      <option value="CESC">CESC</option>
-      <option value="LAML">LAML</option>
-      <option value="CHOL">CHOL</option>
-      <option value="SARC">SARC</option>
-      <option value="DLBC">DLBC</option>
-      <option value="THYM">THYM</option>
-      <option value="KICH">KICH</option>
-      <option value="ACC">ACC</option>
-      <option value="PCPG">PCPG</option>
+  <div class="medium-3 columns">
+    <div style="float:left;">Analysis:</div>
+    <select name="ctype" id="analysisDropdown" placeholder="Select an analysis" selected="pan-cancer">
+      <option value="pan-cancer">pan-cancer</option>
+      <option value="cancer type-specific">cancer type-specific</option>
     </select>
   </div>
-  <div class="medium-6 columns" style="display:block;margin-left:auto;margin-right:auto;">
+  <div class="medium-5 columns" style="display:block;margin-left:auto;margin-right:auto;">
     Columns:<br>
-    <input type="checkbox" name="Hugo_Symbol" checked> Gene
-    <input type="checkbox" name="Transcript_ID"> Transcript
-    <input type="checkbox" name="HGVSp_Short" checked> Mutation
-    <input type="checkbox" name="gwCHASMplus score" checked> Score
-    <input type="checkbox" name="cancer type with highest prevalence" checked> Cancer type
-    <br>
-    <input type="checkbox" name="number of mutations" checked> Number of mutations
-    <input type="checkbox" name="frequency category (highest cancer type)" checked> Frequency
-    <input type="checkbox" name="url" checked> Detailed information
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="Hugo_Symbol" checked> Gene</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="Transcript_ID"> Transcript</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="HGVSp_Short" checked> Mutation</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="gwCHASMplus score" checked> Score</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="cancer type" checked> Cancer type</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="number of mutations" checked> Number of mutations</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="frequency category" checked> Frequency</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="url" checked> Detailed information</div>
+    <div style="white-space: nowrap;display:inline"><input type="checkbox" name="Patient ID"> Patient ID</div>
   </div>
   <div class="medium-4 columns">
     Download:<br>
