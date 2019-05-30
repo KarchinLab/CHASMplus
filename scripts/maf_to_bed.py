@@ -30,6 +30,7 @@ def main(opts):
 
     # fix positions and chromosomes
     mut_df['Start_Position'] = mut_df['Start_Position'] - 1
+    mut_df['Chromosome'] = mut_df['Chromosome'].astype(str)
     has_chr = mut_df['Chromosome'].str.startswith('chr')
     mut_df.loc[has_chr, 'Chromosome'] = mut_df.loc[has_chr, 'Chromosome'].str[3:]
     mut_df['Chromosome'] = 'chr' + mut_df['Chromosome'].astype(str)
