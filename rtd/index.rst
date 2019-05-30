@@ -38,6 +38,6 @@ Releases
 Citation
 --------
 
-The manuscript is currently submitted. Please cite the biorXiv paper for now:
+Please cite our paper:
 
-Tokheim, C., & Karchin, R. (2018). Enhanced context reveals the scope of somatic missense mutations driving human cancers. bioRxiv, 313296. 
+Tokheim and Karchin, CHASMplus Reveals the Scope of Somatic Missense Mutations Driving Human Cancers, Cell Systems (2019), https://doi.org/10.1016/j.cels.2019.05.005

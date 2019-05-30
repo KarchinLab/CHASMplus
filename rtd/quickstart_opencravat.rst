@@ -3,7 +3,7 @@
 Quick start (OpenCRAVAT & CHASMplus)
 ------------------------------------
 
-The easiest way to obtain CHASMplus scores is by using OpenCRAVAT to fetch precomputed scores. You will need python 3.5 or newer to use OpenCRAVAT.
+The easiest way to obtain CHASMplus scores is by using OpenCRAVAT to fetch precomputed scores. You will need python 3.6 or newer to use OpenCRAVAT.
 
 Install OpenCRAVAT
 ++++++++++++++++++
@@ -31,7 +31,7 @@ where LUAD, the abbrevitation from the The Cancer Genome Atlas, designates lung 
 
 .. code-block:: bash
 
-   $ cravat-admin ls -a
+   $ cravat-admin ls -a -t annotator
 
 Running CHASMplus
 +++++++++++++++++
