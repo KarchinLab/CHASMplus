@@ -21,4 +21,4 @@ dependencies:
 - scikit-learn
 - pyyaml
 - pip:
-  - probabilistic2020==1.2.0
+  - probabilistic2020==1.2.2
