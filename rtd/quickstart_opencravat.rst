@@ -34,7 +34,7 @@ It will take several minutes to install, depending on the speed of your internet
 Test example
 ++++++++++++
 
-Please download this example input `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt>`_.
+Please download the example input `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt>`_.
 
 There are three steps to run CHASMplus: 1) upload the input.txt example file (make sure the genome is set to **hg38**); 2) Make sure CHASMplus is checked in the annotator section; 3) Click to generate an excel output file. CHASMplus results will be on the "variant" tab. 
 
