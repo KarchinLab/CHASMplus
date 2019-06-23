@@ -29,24 +29,26 @@ You can select either to install the default CHASMplus or a cancer type-specifc 
 .. image:: /images/install.png
     :align: center
 
-It will take several minutes to install, depending on the speed of your internet. By going back to the "jobs" tab in the upper left, you now are ready to submit mutations!
+It will take several minutes to install, depending on the speed of your internet. By going back to the "jobs" tab in the upper left, you are now ready to submit mutations!
 
 Test example
 ++++++++++++
 
 Please download this example input `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt>`_.
 
-There are three steps to run CHASMplus: 1) upload the input.txt example file; 2) Make sure CHASMplus is checked in the annotator section; 3) Click to generate an excel output file. CHASMplus results will be on the "variant" tab.
+There are three steps to run CHASMplus: 1) upload the input.txt example file (make sure the genome is set to **hg38**); 2) Make sure CHASMplus is checked in the annotator section; 3) Click to generate an excel output file. CHASMplus results will be on the "variant" tab.
 
 .. image:: /images/submit.png
     :align: center
 
-By clicking the "launch" button, you can also interactively explore the results in OpenCRAVAT. Like the excel spreadsheet, CHASMplus results are found on the "variant" tab.
+By clicking the **"launch" button**, you can also **interactively explore** the results in OpenCRAVAT. Like the excel spreadsheet, CHASMplus results are found on the "variant" tab.
 
 While this tutorial only had you run one annotator (CHASMplus), OpenCRAVAT has 50+ more annotations available.
 
 Install Command Line OpenCRAVAT
 ===============================
+
+.. note:: The command line version is meant for users with bioinformatic experience
 
 You will need python 3.6 or newer to use OpenCRAVAT. You will first need to install the OpenCRAVAT python package, please follow the instructions on the OpenCRAVAT wiki: 
 
