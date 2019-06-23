@@ -36,7 +36,7 @@ Test example
 
 Please download this example input `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt>`_.
 
-There are three steps to run CHASMplus: 1) upload the input.txt example file (make sure the genome is set to **hg38**); 2) Make sure CHASMplus is checked in the annotator section; 3) Click to generate an excel output file. CHASMplus results will be on the "variant" tab.
+There are three steps to run CHASMplus: 1) upload the input.txt example file (make sure the genome is set to **hg38**); 2) Make sure CHASMplus is checked in the annotator section; 3) Click to generate an excel output file. CHASMplus results will be on the "variant" tab. 
 
 .. image:: /images/submit.png
     :align: center
@@ -44,6 +44,11 @@ There are three steps to run CHASMplus: 1) upload the input.txt example file (ma
 By clicking the **"launch" button**, you can also **interactively explore** the results in OpenCRAVAT. Like the excel spreadsheet, CHASMplus results are found on the "variant" tab.
 
 While this tutorial only had you run one annotator (CHASMplus), OpenCRAVAT has 50+ more annotations available.
+
+Interpretation
+++++++++++++++
+
+CHASMplus scores range from 0 to 1, with higher scores meaning more likely to be a cancer driver mutation. If you are looking to identify a discrete set of putative driver mutations, then we suggest that you correct for multiple hypothesis testing. We recommend using the Benjamini-Hochberg (BH) procedure for controling the false discovery rate. You will need to use an external package to do this, e.g., the `p.adjust` function in R. False discovery rate adjustments will likely be added in the future.
 
 Install Command Line OpenCRAVAT
 ===============================
