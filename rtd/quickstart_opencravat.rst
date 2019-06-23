@@ -36,7 +36,7 @@ Test example
 
 Please download the example input `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt>`_.
 
-There are three steps to run CHASMplus: 1) upload the input.txt example file (make sure the genome is set to **hg38**); 2) Make sure CHASMplus is checked in the annotator section and then press the **Annotate** button in the bottom left; 3) Click to generate an excel output file. CHASMplus results will be on the "variant" tab. 
+There are four steps to run CHASMplus: 1) upload the input.txt example file (make sure the genome is set to **hg38**); 2) Make sure CHASMplus is checked in the annotator section; 3) Press the **Annotate** button in the bottom left; 4) Click to generate an excel output file. CHASMplus results will be on the "variant" tab. 
 
 .. image:: /images/submit.png
     :align: center
