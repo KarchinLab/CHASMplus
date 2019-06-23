@@ -29,11 +29,6 @@ Contents:
    installation
    faq
 
-Releases
---------
-
-* `CHASMplus v1.0.0 <https://github.com/KarchinLab/CHASMplus/archive/v1.0.0.tar.gz>`_ - 8/17/2018 - Initial release
-
 Citation
 --------
 
