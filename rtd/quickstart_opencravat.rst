@@ -50,6 +50,11 @@ Interpretation
 
 CHASMplus scores range from 0 to 1, with higher scores meaning more likely to be a cancer driver mutation. If you are looking to identify a discrete set of putative driver mutations, then we suggest that you correct for multiple hypothesis testing. We recommend using the Benjamini-Hochberg (BH) procedure for controling the false discovery rate. You will need to use an external package to do this, e.g., the `p.adjust` function in R. False discovery rate adjustments will likely be added in the future.
 
+Further documentation
++++++++++++++++++++++
+
+For further advanced features of OpenCRAVAT, please see the `OpenCRAVAT wiki <https://github.com/KarchinLab/open-cravat/wiki>`_.
+
 Install Command Line OpenCRAVAT
 ===============================
 
