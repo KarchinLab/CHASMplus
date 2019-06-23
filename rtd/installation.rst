@@ -1,5 +1,5 @@
-Advanced: installation (source)
--------------------------------
+Advanced: Build from Source
+---------------------------
 
 .. image:: https://travis-ci.org/KarchinLab/CHASMplus.svg?branch=master
     :target: https://travis-ci.org/KarchinLab/CHASMplus
