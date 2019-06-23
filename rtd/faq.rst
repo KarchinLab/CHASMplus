@@ -19,6 +19,10 @@ cannot capture ahead of time what are the specific genes being assessed. To get 
 estimate of statistical significance, you will need to use the source code version
 of CHASMplus to perform a customized analysis. Documentation on how to do this will be added in the future.
 
+**Will CHASMplus support calibrated p-values for targeted gene panels in the future?**
+
+Yes! We are currently trying to include a calibrated p-value calculation for the MSK-IMPACT gene panel. Since this depends on the particular genes in the targeted gene panel, we would also be willing to include other panels by popular request.
+
 **Where can I obtain the training data for CHASMplus?**
 
 You can obtain the set of mutations used for training from `here <http://karchinlab.org/data/CHASMplus/formatted_training_list.txt.gz>`_.
