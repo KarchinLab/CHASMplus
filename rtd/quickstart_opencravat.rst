@@ -19,12 +19,12 @@ Next, click the "Store" tab.
 .. image:: /images/store.png
     :align: center
 
-Search for CHASMplus in the store and then click the CHASMplus annotator.
+Search for CHASMplus in the store and then click the CHASMplus annotator. You can select either to install the default CHASMplus or a cancer type-specific version. 
 
 .. image:: /images/search.png
     :align: center
 
-You can select either to install the default CHASMplus or a cancer type-specifc version by selecting a cancer type in the top right corner. Next, press the "install" button.
+Next, press the "install" button.
 
 .. image:: /images/install.png
     :align: center
