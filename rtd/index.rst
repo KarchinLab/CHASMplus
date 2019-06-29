@@ -20,9 +20,6 @@ Large-scale cancer sequencing studies of patient cohorts have statistically impl
 
 .. note:: CHASMplus is also available through a graphical user interface [see the :ref:`quickstart-ref`]
 
-Selected publication using CHASMplus:
-
-
 
 Contents:
 
