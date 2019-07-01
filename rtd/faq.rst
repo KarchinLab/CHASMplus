@@ -23,6 +23,10 @@ of CHASMplus to perform a customized analysis. Documentation on how to do this w
 
 Yes! We are currently trying to include a calibrated p-value calculation for the MSK-IMPACT gene panel into the easy to use OpenCRAVAT software. Since this depends on the particular genes in the targeted gene panel, we would also be willing to include other panels by popular request.
 
+**Can I get custom scores based on my own data from targeted gene panels?**
+
+Yes. However, you will need to run the source code version of CHASMplus to customize the predictions to your data.
+
 **Where can I obtain the training data for CHASMplus?**
 
 You can obtain the set of mutations used for training from `here <http://karchinlab.org/data/CHASMplus/formatted_training_list.txt.gz>`_.
