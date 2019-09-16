@@ -34,7 +34,10 @@ It will take several minutes to install, depending on the speed of your internet
 Test example
 ++++++++++++
 
-Please download the example input `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt>`_.
+Please download the example input `here <https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt>`_. For this example we use a simple tab-delimited format, but OpenCRAVAT can also handle **VCF files**. The tab-delimited format consists of the following 7 columns: 1) chromosome (with "chr" prefix); 2) Start position (1-based coordinates); 3) Strand ("+" or "-"); 4) Reference allele ("-" for insertions); 5) Alternate allele ("-" for deletions); 6) sample ID; 7) variant ID. For more details about input file formats, please see the `OpenCRAVAT wiki <https://github.com/KarchinLab/open-cravat/wiki/File-Formats>`_.
+
+.. image:: /images/example_input.png
+    :align: center
 
 There are four steps to run CHASMplus: 1) upload the input.txt example file (make sure the genome is set to **hg38**); 2) Make sure CHASMplus is checked in the annotator section; 3) Press the **Annotate** button in the bottom left; 4) Click to generate an excel output file. CHASMplus results will be on the "variant" tab. 
 
