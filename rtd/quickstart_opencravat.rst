@@ -34,7 +34,8 @@ It will take several minutes to install, depending on the speed of your internet
 Test example
 ++++++++++++
 
-Please download the example input .. html:: <a href="https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt" download>here</a>. 
+.. html::
+    Please download the example input <a href="https://raw.githubusercontent.com/KarchinLab/CHASMplus/master/rtd/input.txt" download>here</a>. 
 
 For this example we use a simple tab-delimited format, but OpenCRAVAT can also handle **VCF files**. The tab-delimited format consists of the following 7 columns: 1) chromosome (with "chr" prefix); 2) Start position (1-based coordinates); 3) Strand ("+" or "-"); 4) Reference allele ("-" for insertions); 5) Alternate allele ("-" for deletions); 6) sample ID; 7) variant ID. For more details about input file formats, please see the `OpenCRAVAT wiki <https://github.com/KarchinLab/open-cravat/wiki/File-Formats>`_.
 
