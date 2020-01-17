@@ -22,6 +22,7 @@ Large-scale DNA sequencing studies of patients' tumors have revealed that most d
 .. note:: CHASMplus is available through a graphical user interface [see the :ref:`quickstart-ref`]
 
 Prominent papers using CHASMplus:
+
 * Reiter *et al.*, Minimal functional driver gene heterogeneity among untreated metastases. **Science**
 * Anagnostou, Niknafs *et al.*, Multimodal genomic features predict outcome of immune checkpoint blockade in non-small-cell lung cancer. **Nature Cancer**
 * *Reiter et al.*, An analysis of genetic heterogeneity in untreated cancers. **Nature Reviews Cancer**
