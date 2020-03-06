@@ -11,17 +11,9 @@ Otherwise, create a new post with the CHASMplus tag. We will be checking
 biostars for questions. You may also contact me directly at
 ctokhei1 AT alumni DOT jh DOT edu.
 
-**Are the p-values by CHASMplus valid for targeted gene panels?**
+**Does CHASMplus support targeted gene panels?**
 
-The p-values reported from CHASMplus are based on whole-exome
-sequencing studies. If your mutations comes from a targeted gene panel, CHASMplus
-cannot capture ahead of time what are the specific genes being assessed. To get an accurate
-estimate of statistical significance, you will need to use the source code version
-of CHASMplus to perform a customized analysis. Documentation on how to do this will be added in the future.
-
-**Will CHASMplus support calibrated p-values for targeted gene panels in the future?**
-
-Yes! We are currently trying to include a calibrated p-value calculation for the MSK-IMPACT gene panel into the easy to use OpenCRAVAT software. Since this depends on the particular genes in the targeted gene panel, we would also be willing to include other panels by popular request.
+Yes! We have added CHASMplus modules into `OpenCRAVAT <https://opencravat.org/>`_ that support targeted gene panel sequencing. The first iteration was done for the MSK-IMPACT gene panel, but others may be supported upon request. Please see the OpenCRAVAT instructions for how to install "annotators" (`GUI <https://github.com/KarchinLab/open-cravat/wiki/5.-GUI-usage#managing-modules>`_, `command line <https://github.com/KarchinLab/open-cravat/wiki/1.-Installation-Instructions#install-annotators>`_). The MSK-IMPACT version of CHASMplus will have "MSK-IMPACT" (GUI version) or "mski" (command line version) in the name.
 
 **Can I get custom scores based on my own data from targeted gene panels?**
 
