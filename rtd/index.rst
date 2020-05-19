@@ -26,7 +26,8 @@ Prominent papers using CHASMplus:
 * Reiter *et al.*, Minimal functional driver gene heterogeneity among untreated metastases. **Science**
 * Anagnostou, Niknafs *et al.*, Multimodal genomic features predict outcome of immune checkpoint blockade in non-small-cell lung cancer. **Nature Cancer**
 * Saito *et al.*, Landscape and function of multiple mutations within individual oncogenes. **Nature**
-* *Reiter et al.*, An analysis of genetic heterogeneity in untreated cancers. **Nature Reviews Cancer**
+* Reiter *et al.*, An analysis of genetic heterogeneity in untreated cancers. **Nature Reviews Cancer**
+* Hu *et al.*, Multi-cancer analysis of clonality and the timing of systemic spread in paired primary tumors and metastases. **Nature Genetics** 
 
 Contents:
 
