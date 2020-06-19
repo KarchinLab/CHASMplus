@@ -19,7 +19,7 @@ CHASMplus: predicting which missense mutations drive human cancers
 Large-scale DNA sequencing studies of patients' tumors have revealed that most driver mutations occur only in a few patients, which presents a challenge for precision medicine. CHASMplus is a machine learning method that accurately distinguishes between driver and passenger missense mutations, even for those found at low frequencies or are cancer type-specific. Unlike previous approaches that focus on identifying driver genes, CHASMplus identifies whether individual mutations are cancer drivers. CHASMplus can be used by both bioinformaticians and biolgists by using a graphical user interface or a command line tool.
 
 
-.. note:: CHASMplus is available through a graphical user interface [see the :ref:`quickstart-ref`]
+.. note:: You can run CHASMplus without installing anything by submitting your data to the OpenCRAVAT webserver (details `here <https://opencravat.org/>`_). After creating a user account, you'll just need to check the box for CHASMplus and hit the annotate button (`OpenCRAVAT webserver <https://run.opencravat.org/>`_). Also, you can install a graphical user interface [see the :ref:`quickstart-ref`]
 
 Prominent papers using CHASMplus:
 
@@ -28,6 +28,7 @@ Prominent papers using CHASMplus:
 * Saito *et al.*, Landscape and function of multiple mutations within individual oncogenes. **Nature**
 * Reiter *et al.*, An analysis of genetic heterogeneity in untreated cancers. **Nature Reviews Cancer**
 * Hu *et al.*, Multi-cancer analysis of clonality and the timing of systemic spread in paired primary tumors and metastases. **Nature Genetics** 
+* Sakomoto *et al.*, The Evolutionary Origins of Recurrent Pancreatic Cancer, **Cancer Discovery**
 
 Contents:
 
