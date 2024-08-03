@@ -54,7 +54,7 @@ Features for mutations CHASMplus are obtained  can also be prepared by directly 
 
 .. code-block:: bash
 
-   $ wget http://karchinlab.org/datasets/SNVBox_chasmplus.sql.gz
+   $ wget https://www.dropbox.com/scl/fi/wo8qva7s77p4bptvdnjyw/SNVBox_chasmplus.sql.gz?rlkey=mxxqoruksbg2eaol1fqxmhrfn&st=ksnshvcl&dl=1 -o SNVBox_chasmplus.sql.gz
    $ gunzip SNVBox_chasmplus.sql.gz
    $ mysql [options] < SNVBox_chasm2.sql
 
@@ -67,7 +67,7 @@ The next step is to download the code that fetches features from the SNVBox data
 
 .. code-block:: bash
 
-   $ wget http://karchinlab.org/datasets/SNVBox.tar.gz
+   $ wget https://www.dropbox.com/scl/fi/tkaysovawrl6euhc033id/SNVBox.tar.gz?rlkey=oz30lj02xbsjcmkugb7nrfoh4&st=81tk4q6t&dl=1 -o SNVBox.tar.gz
 
 The next step is to set the configuration file (snv_box.conf) to point towards the established database in the previous section. Specifically, change the db.user, db.password, and db.host to point towards your own mysql user name, mysql password, and mysql host.
 
