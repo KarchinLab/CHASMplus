@@ -63,7 +63,7 @@ This will create a database named mupit_modbase, where [options] is the necessar
 SNVBox code
 +++++++++++
 
-The next step is to download the code that fetches features from the SNVBox database. Please download the code from `here <http://karchinlab.org/datasets/SNVBox.tar.gz>`_, or use wget:
+The next step is to download the code that fetches features from the SNVBox database. Please download the code from `here <https://www.dropbox.com/scl/fi/tkaysovawrl6euhc033id/SNVBox.tar.gz?rlkey=oz30lj02xbsjcmkugb7nrfoh4&st=81tk4q6t&dl=1>`_, or use wget:
 
 .. code-block:: bash
 
