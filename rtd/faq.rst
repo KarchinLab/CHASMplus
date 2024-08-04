@@ -21,7 +21,7 @@ Yes. However, you will need to run the source code version of CHASMplus to custo
 
 **Where can I obtain the training data for CHASMplus?**
 
-You can obtain the set of mutations used for training from `here <http://karchinlab.org/data/CHASMplus/formatted_training_list.txt.gz>`_.
+You can obtain the set of mutations used for training from `here <https://www.dropbox.com/scl/fi/i0018dqgtcjq3n1ebkbuq/formatted_training_list.txt.gz?rlkey=f4fuf4l58cajrwov9n7gcnwry&st=nd23nrdq&dl=1>`_.
 
 **I want to compare my method to CHASMplus. How should I do it?**
 
